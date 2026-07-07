@@ -1,0 +1,826 @@
+/* ============================================================
+   TOEFL Vocab Battle — cute pastel UI
+   ============================================================ */
+
+:root {
+  /* sky / app backdrop */
+  --sky-top: #b4ecff;
+  --sky-bot: #e7d4ff;
+
+  /* candy palette */
+  --pink: #ff9ec6;
+  --pink-deep: #ff6fa5;
+  --lav: #c3aef0;
+  --lav-deep: #9b7fe0;
+  --mint: #a6ecca;
+  --mint-deep: #45c491;
+  --sky: #86d2f2;
+  --sky-deep: #3fb0e6;
+  --sun: #ffd76b;
+  --sun-deep: #ffb845;
+  --coral: #ff8a9a;
+
+  /* surfaces + ink */
+  --panel: #fffaf3;
+  --panel-2: #fff1f7;
+  --edge: #ffc7de;      /* soft pink panel border */
+  --edge-lav: #d7c6f5;  /* soft lavender border */
+  --ink: #6a557e;       /* readable plum text */
+  --ink-soft: #a08fb8;
+  --ink-strong: #52406a;
+
+  /* status */
+  --good: #7fe0a4;
+  --good-deep: #35b06a;
+  --good-ink: #17603a;
+  --bad: #ff97a6;
+  --bad-deep: #ef5f77;
+  --heart: #ff6f9c;
+  --heart-empty: #f2d7e5;
+
+  --shadow: rgba(150, 110, 170, 0.22);
+}
+
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  font-family: 'Fredoka', 'Segoe UI', system-ui, sans-serif;
+  font-weight: 500;
+  background: linear-gradient(180deg, var(--sky-top) 0%, var(--sky-bot) 100%);
+  color: var(--ink);
+  overflow: hidden;
+}
+
+.th {
+  font-family: 'Mali', 'Fredoka', sans-serif;
+  font-weight: 500;
+}
+
+/* sprites stay crisp pixel-art */
+.fighter,
+.menu-wizard,
+.menu-dragon,
+.result-sprite {
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: pixelated;
+}
+
+/* ---- App frame (phone) ------------------------------------ */
+.app-shell {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.app-frame {
+  position: relative;
+  width: 100%;
+  max-width: 480px;
+  height: 100%;
+  max-height: 920px;
+  background: linear-gradient(180deg, #cdeeff 0%, #efe1ff 100%);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+@media (min-width: 520px) {
+  .app-shell {
+    padding: 16px;
+  }
+  .app-frame {
+    border: 5px solid #fff;
+    border-radius: 26px;
+    box-shadow: 0 24px 60px rgba(120, 90, 160, 0.35), inset 0 0 0 3px var(--edge-lav);
+  }
+}
+
+/* ---- Soft candy panel helper ------------------------------ */
+.wood {
+  background: var(--panel);
+  border: 3px solid var(--edge);
+  border-radius: 18px;
+  box-shadow: inset 0 2px 0 #fff, 0 4px 0 var(--edge), 0 6px 12px var(--shadow);
+}
+
+/* ============================================================
+   GAME LAYOUT
+   ============================================================ */
+.game {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  padding: 10px;
+  gap: 10px;
+}
+
+/* ---- Status bar ------------------------------------------- */
+.status-bar {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.hp-panel {
+  background: var(--panel);
+  border: 3px solid var(--edge);
+  border-radius: 16px;
+  box-shadow: inset 0 2px 0 #fff, 0 3px 0 var(--edge), 0 5px 10px var(--shadow);
+  padding: 7px 10px 8px;
+}
+
+.hp-panel:last-child {
+  border-color: var(--edge-lav);
+  box-shadow: inset 0 2px 0 #fff, 0 3px 0 var(--edge-lav), 0 5px 10px var(--shadow);
+}
+
+.hp-title {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  color: var(--ink-strong);
+  margin-bottom: 5px;
+}
+
+.hearts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1px 3px;
+  line-height: 1;
+}
+
+.pip {
+  font-size: 14px;
+  filter: drop-shadow(0 1px 0 rgba(160, 120, 170, 0.35));
+}
+
+.pip.full {
+  color: var(--heart);
+}
+
+.pip.empty {
+  color: var(--heart-empty);
+}
+
+.hp-num {
+  margin-top: 4px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--ink-soft);
+}
+
+/* ---- Timer + sound row ------------------------------------ */
+.timer-and-sound {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.timer-wrap {
+  flex: 1;
+}
+
+.timer-label {
+  text-align: center;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: var(--ink-strong);
+  margin-bottom: 4px;
+}
+
+.timer-track {
+  height: 20px;
+  background: #efe6f7;
+  border: 3px solid #fff;
+  border-radius: 12px;
+  box-shadow: inset 0 2px 4px rgba(150, 120, 170, 0.25), 0 2px 0 var(--edge-lav);
+  overflow: hidden;
+  padding: 2px;
+}
+
+.timer-fill {
+  height: 100%;
+  border-radius: 8px;
+  background: linear-gradient(180deg, #bff0ff 0%, var(--sky) 55%, var(--sky-deep) 100%);
+  transition: width 0.1s linear;
+}
+
+.timer-fill.low {
+  background: linear-gradient(180deg, #ffd6c0 0%, var(--coral) 55%, #ff6f88 100%);
+}
+
+.sound-controls {
+  display: flex;
+  gap: 8px;
+}
+
+.snd-btn {
+  width: 42px;
+  height: 42px;
+  font-size: 18px;
+  cursor: pointer;
+  background: var(--panel);
+  border: 3px solid var(--edge-lav);
+  border-radius: 14px;
+  box-shadow: inset 0 2px 0 #fff, 0 3px 0 var(--edge-lav);
+  transition: transform 0.06s;
+}
+
+.snd-btn:active {
+  transform: translateY(2px);
+  box-shadow: inset 0 2px 0 #fff, 0 1px 0 var(--edge-lav);
+}
+
+.snd-btn.off {
+  filter: grayscale(0.55) brightness(0.97);
+  opacity: 0.85;
+}
+
+/* ---- Battle arena ----------------------------------------- */
+.arena {
+  position: relative;
+  flex: 1;
+  min-height: 180px;
+  border: 4px solid #fff;
+  border-radius: 20px;
+  background-size: cover;
+  background-position: center 28%;
+  image-rendering: auto;
+  overflow: hidden;
+  box-shadow: 0 4px 0 var(--edge-lav), 0 8px 16px var(--shadow), inset 0 0 0 2px rgba(255, 255, 255, 0.5);
+}
+
+.arena.shake {
+  animation: shake 0.4s ease;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-6px); }
+  40% { transform: translateX(6px); }
+  60% { transform: translateX(-4px); }
+  80% { transform: translateX(4px); }
+}
+
+/* soft grassy ground band the fighters stand on */
+.arena::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 14%;
+  background: linear-gradient(180deg, rgba(80, 170, 90, 0) 0%, rgba(70, 155, 80, 0.28) 70%, rgba(60, 140, 70, 0.4) 100%);
+  pointer-events: none;
+}
+
+.fighter {
+  position: absolute;
+  bottom: 12%;
+  height: 42%;
+  max-height: 150px;
+  z-index: 2;
+  filter: drop-shadow(2px 4px 3px rgba(60, 50, 80, 0.35));
+}
+
+.wizard {
+  left: 6%;
+}
+
+.dragon {
+  right: 4%;
+  height: 46%;
+  max-height: 165px;
+}
+
+.ground-shadow {
+  position: absolute;
+  bottom: 12%;
+  height: 10px;
+  border-radius: 50%;
+  background: radial-gradient(rgba(50, 60, 40, 0.32), transparent 70%);
+  z-index: 1;
+}
+
+.wizard-shadow {
+  left: 6%;
+  width: 80px;
+}
+
+.dragon-shadow {
+  right: 4%;
+  width: 110px;
+}
+
+/* idle bobbing */
+.anim-idle {
+  animation: bob 2.2s ease-in-out infinite;
+}
+
+.dragon.anim-idle {
+  animation: bob 2.6s ease-in-out infinite;
+}
+
+@keyframes bob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+
+/* attacking lean */
+.anim-cast_blue,
+.anim-cast_fire {
+  animation: lunge 0.5s ease;
+}
+
+@keyframes lunge {
+  0% { transform: translateX(0); }
+  40% { transform: translateX(14px) scale(1.05); }
+  100% { transform: translateX(0); }
+}
+
+/* hurt flash */
+.anim-hurt {
+  animation: hurtFlash 0.5s ease;
+}
+
+@keyframes hurtFlash {
+  0%, 100% { filter: drop-shadow(2px 4px 3px rgba(60, 50, 80, 0.35)); }
+  25% { filter: brightness(1.8) sepia(1) hue-rotate(-30deg) saturate(4); transform: translateX(-6px); }
+  60% { transform: translateX(3px); }
+}
+
+/* dragon recoil */
+.dragon.anim-hurt {
+  animation: dragonHurt 0.5s ease;
+}
+
+@keyframes dragonHurt {
+  0%, 100% { filter: drop-shadow(2px 4px 3px rgba(60, 50, 80, 0.35)); }
+  25% { filter: brightness(1.7) sepia(1) hue-rotate(-30deg) saturate(4); transform: translateX(10px); }
+}
+
+/* death */
+.anim-die {
+  animation: die 0.9s ease forwards;
+}
+
+@keyframes die {
+  0% { transform: rotate(0) translateY(0); opacity: 1; }
+  100% { transform: rotate(-8deg) translateY(6px); opacity: 0.85; filter: grayscale(0.5) brightness(0.8) drop-shadow(2px 4px 3px rgba(60,50,80,.4)); }
+}
+
+/* ---- Attack effects --------------------------------------- */
+.fx-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+}
+
+.beam.blue {
+  position: absolute;
+  left: 20%;
+  bottom: 44%;
+  height: 10px;
+  width: 52%;
+  transform-origin: left center;
+  border-radius: 6px;
+  background: linear-gradient(90deg, rgba(191, 234, 255, 0.2), #cfefff 40%, #7cd0ff 100%);
+  box-shadow: 0 0 14px 5px rgba(120, 200, 255, 0.85);
+  animation: beam 0.6s ease-out;
+}
+
+@keyframes beam {
+  0% { transform: scaleX(0); opacity: 0.2; }
+  30% { transform: scaleX(1); opacity: 1; }
+  100% { transform: scaleX(1); opacity: 0; }
+}
+
+.fireball {
+  position: absolute;
+  left: 24%;
+  bottom: 42%;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 40% 35%, #fff2b0, #ffb03e 45%, #ff6f3f 80%);
+  box-shadow: 0 0 16px 6px rgba(255, 170, 90, 0.85);
+  animation: fly 0.6s ease-in forwards;
+}
+
+@keyframes fly {
+  0% { left: 24%; opacity: 1; transform: scale(0.7); }
+  85% { left: 70%; opacity: 1; transform: scale(1.1); }
+  100% { left: 72%; opacity: 0; transform: scale(1.4); }
+}
+
+.enemy-fireball {
+  position: absolute;
+  right: 24%;
+  bottom: 42%;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 60% 35%, #fff0c0, #ff9a5e 45%, #ff5f6f 80%);
+  box-shadow: 0 0 16px 6px rgba(255, 130, 120, 0.8);
+  animation: flyBack 0.6s ease-in forwards;
+}
+
+@keyframes flyBack {
+  0% { right: 24%; opacity: 1; transform: scale(0.7); }
+  85% { right: 74%; opacity: 1; transform: scale(1.1); }
+  100% { right: 76%; opacity: 0; transform: scale(1.4); }
+}
+
+.impact {
+  position: absolute;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  opacity: 0;
+}
+
+.impact.blue {
+  right: 16%;
+  bottom: 38%;
+  background: radial-gradient(circle, #cfefff, rgba(120, 200, 255, 0) 70%);
+  animation: burst 0.6s ease-out 0.28s;
+}
+
+.impact.fire {
+  right: 16%;
+  bottom: 38%;
+  background: radial-gradient(circle, #ffd899, rgba(255, 150, 80, 0) 70%);
+  animation: burst 0.6s ease-out 0.42s;
+}
+
+.impact.enemy {
+  left: 12%;
+  bottom: 38%;
+  background: radial-gradient(circle, #ffc0b0, rgba(255, 110, 100, 0) 70%);
+  animation: burst 0.6s ease-out 0.42s;
+}
+
+@keyframes burst {
+  0% { opacity: 0; transform: scale(0.3); }
+  40% { opacity: 1; transform: scale(1.3); }
+  100% { opacity: 0; transform: scale(1.7); }
+}
+
+/* ---- Quiz board ------------------------------------------- */
+.quiz {
+  background: var(--panel);
+  border: 4px solid var(--edge);
+  border-radius: 22px;
+  box-shadow: inset 0 2px 0 #fff, 0 5px 0 var(--edge), 0 8px 16px var(--shadow);
+  padding: 14px 14px 12px;
+}
+
+.quiz-qnum {
+  text-align: center;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: var(--lav-deep);
+  margin-bottom: 6px;
+}
+
+.quiz-prompt {
+  text-align: center;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.5;
+  color: var(--ink);
+  margin-bottom: 14px;
+}
+
+.quiz-prompt .vocab {
+  display: block;
+  color: var(--pink-deep);
+  font-size: 26px;
+  font-weight: 700;
+  margin-top: 4px;
+  text-shadow: 0 2px 0 #ffe0ec;
+}
+
+.options {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+}
+
+.option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-align: left;
+  min-height: 52px;
+  padding: 10px 14px;
+  cursor: pointer;
+  color: var(--ink-strong);
+  background: var(--panel-2);
+  border: 3px solid var(--edge);
+  border-radius: 16px;
+  box-shadow: inset 0 2px 0 #fff, 0 3px 0 var(--edge);
+  transition: transform 0.06s, filter 0.1s, background 0.1s;
+}
+
+.option:active:not(:disabled) {
+  transform: translateY(2px);
+  box-shadow: inset 0 2px 0 #fff, 0 1px 0 var(--edge);
+  filter: brightness(1.02);
+}
+
+.option:disabled {
+  cursor: default;
+}
+
+.opt-letter {
+  font-size: 15px;
+  font-weight: 700;
+  color: #fff;
+  background: var(--lav);
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: inset 0 -2px 0 rgba(0, 0, 0, 0.08);
+}
+
+.opt-text {
+  font-size: 18px;
+  line-height: 1.25;
+  font-weight: 600;
+}
+
+.option.correct {
+  background: linear-gradient(180deg, #c9f6d9 0%, var(--good) 100%);
+  border-color: var(--good-deep);
+  box-shadow: inset 0 2px 0 #eafff1, 0 3px 0 var(--good-deep), 0 0 14px rgba(90, 220, 140, 0.6);
+}
+
+.option.correct .opt-text {
+  color: var(--good-ink);
+}
+
+.option.correct .opt-letter {
+  background: var(--good-deep);
+}
+
+.option.wrong {
+  background: linear-gradient(180deg, #ffd2d8 0%, var(--bad) 100%);
+  border-color: var(--bad-deep);
+  box-shadow: inset 0 2px 0 #ffe6ea, 0 3px 0 var(--bad-deep);
+  animation: shake 0.4s ease;
+}
+
+.option.wrong .opt-text {
+  color: #8a2233;
+}
+
+.option.wrong .opt-letter {
+  background: var(--bad-deep);
+}
+
+.option.dim {
+  filter: brightness(0.98) saturate(0.7);
+  opacity: 0.7;
+}
+
+.score-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 12px;
+  padding: 0 4px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ink-soft);
+}
+
+.accent {
+  color: var(--sun-deep);
+}
+
+/* ============================================================
+   START MENU
+   ============================================================ */
+.screen {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 20px;
+  text-align: center;
+  min-height: 0;
+}
+
+.start-menu {
+  gap: 6px;
+}
+
+.title-block {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.menu-wizard,
+.menu-dragon {
+  height: 82px;
+  filter: drop-shadow(2px 3px 2px rgba(90, 70, 110, 0.35));
+  animation: bob 2.4s ease-in-out infinite;
+}
+
+.game-title {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  line-height: 1.05;
+}
+
+.game-title .t1 {
+  font-size: 40px;
+  font-weight: 700;
+  color: var(--pink-deep);
+  text-shadow: 0 3px 0 #fff, 0 5px 0 var(--edge);
+}
+
+.game-title .t2 {
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: var(--lav-deep);
+  text-shadow: 0 2px 0 #fff;
+}
+
+.subtitle {
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.5;
+  color: var(--ink);
+  margin: 4px 0 14px;
+  max-width: 340px;
+}
+
+.difficulty-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  width: 100%;
+  max-width: 320px;
+  margin-top: 8px;
+}
+
+.diff-btn {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 16px;
+  cursor: pointer;
+  color: var(--ink-strong);
+  background: var(--panel);
+  border: 4px solid var(--edge);
+  border-radius: 20px;
+  box-shadow: inset 0 2px 0 #fff, 0 5px 0 var(--edge), 0 8px 14px var(--shadow);
+  transition: transform 0.08s, filter 0.1s;
+}
+
+.diff-btn:active:not(:disabled) {
+  transform: translateY(3px);
+  box-shadow: inset 0 2px 0 #fff, 0 2px 0 var(--edge), 0 4px 8px var(--shadow);
+}
+
+.diff-btn:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.diff-easy { border-color: #b6e8c4; box-shadow: inset 0 2px 0 #fff, 0 5px 0 #9fdcb4, 0 8px 14px var(--shadow); }
+.diff-medium { border-color: #ffe0a3; box-shadow: inset 0 2px 0 #fff, 0 5px 0 #ffd489, 0 8px 14px var(--shadow); }
+.diff-hard { border-color: #ffc3cf; box-shadow: inset 0 2px 0 #fff, 0 5px 0 #ffabbd, 0 8px 14px var(--shadow); }
+
+.diff-label {
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.diff-easy .diff-label { color: var(--good-deep); }
+.diff-medium .diff-label { color: var(--sun-deep); }
+.diff-hard .diff-label { color: var(--pink-deep); }
+
+.diff-detail {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--ink-soft);
+  line-height: 1.4;
+}
+
+.menu-status {
+  margin-top: 18px;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.5;
+  color: var(--ink-soft);
+  max-width: 320px;
+}
+
+.menu-status .err {
+  color: var(--bad-deep);
+}
+
+/* ============================================================
+   RESULT SCREEN
+   ============================================================ */
+.result {
+  gap: 14px;
+}
+
+.result-sprite {
+  height: 130px;
+  filter: drop-shadow(2px 4px 3px rgba(90, 70, 110, 0.4));
+  animation: bob 2.2s ease-in-out infinite;
+}
+
+.result-title {
+  margin: 0;
+  font-size: 40px;
+  font-weight: 700;
+  text-shadow: 0 3px 0 #fff, 0 5px 0 var(--edge);
+}
+
+.result.win .result-title {
+  color: var(--pink-deep);
+  animation: pop 0.6s ease;
+}
+
+.result.lose .result-title {
+  color: var(--lav-deep);
+}
+
+@keyframes pop {
+  0% { transform: scale(0.4); opacity: 0; }
+  60% { transform: scale(1.15); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.result-sub {
+  font-size: 16px;
+  color: var(--ink);
+  margin: 0;
+}
+
+.result-score {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.play-again {
+  margin-top: 8px;
+  padding: 16px 30px;
+  font-size: 18px;
+  font-weight: 700;
+  cursor: pointer;
+  color: #fff;
+  background: linear-gradient(180deg, var(--pink) 0%, var(--pink-deep) 100%);
+  border: 4px solid #fff;
+  border-radius: 20px;
+  box-shadow: 0 5px 0 var(--pink-deep), 0 8px 14px var(--shadow);
+  transition: transform 0.08s;
+}
+
+.play-again:active {
+  transform: translateY(3px);
+  box-shadow: 0 2px 0 var(--pink-deep), 0 4px 8px var(--shadow);
+}
+
+/* short viewport tweaks */
+@media (max-height: 700px) {
+  .fighter { height: 38%; }
+  .opt-text { font-size: 16px; }
+  .quiz-prompt .vocab { font-size: 22px; }
+  .menu-wizard, .menu-dragon { height: 66px; }
+  .game-title .t1 { font-size: 34px; }
+}
