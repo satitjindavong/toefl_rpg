@@ -8,14 +8,18 @@ export const DIFFICULTIES = {
 // Fallback wizard HP if a difficulty doesn't specify one.
 export const WIZARD_MAX_HP = 10
 
-// Correct within this many seconds => Critical (blue) attack.
-export const CRITICAL_WINDOW = 5
-
 // Damage values. Any correct answer within the time limit deals 1 damage;
-// answering fast still triggers the flashier blue "Critical" beam + bonus score.
+// answering in the first half of the timer still triggers the flashier blue
+// "Critical" beam + bonus score.
 export const DMG_CRITICAL = 1 // fast answer (blue light beam)
 export const DMG_NORMAL = 1 // slower-but-correct answer (fireball)
 export const DMG_TO_WIZARD = 1 // wrong / timeout
+
+// Extra points per second left on the timer when answering correctly.
+export const SPEED_BONUS_PER_SEC = 10
+
+// End-of-game bonus for each of the Wizard's surviving HP.
+export const HP_BONUS = 500
 
 // Length of the attack/animation pause before the next question (ms).
 export const TURN_DELAY = 1500

@@ -8,10 +8,10 @@ import { audio } from '../audio/audioEngine.js'
 import { shuffle } from '../game/questions.js'
 import {
   WIZARD_MAX_HP,
-  CRITICAL_WINDOW,
   DMG_CRITICAL,
   DMG_NORMAL,
   DMG_TO_WIZARD,
+  SPEED_BONUS_PER_SEC,
   TURN_DELAY,
   TICK_MS,
 } from '../game/constants.js'
@@ -73,14 +73,15 @@ function reducer(state, action) {
 function resolve(state, { choice = null, timeout = false }) {
   const q = state.pool[state.index]
   const correct = !timeout && choice === q.answer
-  const elapsed = state.timeLimit - state.timeLeft
 
   if (correct) {
-    const critical = elapsed <= CRITICAL_WINDOW
+    // Critical if answered within the first half of this question's timer.
+    const critical = state.timeLeft >= state.timeLimit / 2
     const dmg = critical ? DMG_CRITICAL : DMG_NORMAL
     const dragonHp = Math.max(0, state.dragonHp - dmg)
     const combo = state.combo + 1
-    const points = (critical ? 100 : 50) * combo
+    const speedBonus = Math.round(SPEED_BONUS_PER_SEC * Math.max(0, state.timeLeft))
+    const points = (critical ? 100 : 50) * combo + speedBonus
     return {
       ...state,
       phase: 'resolving',
@@ -140,8 +141,8 @@ export default function GameContainer({ questions, config, sound, onSound, onEnd
     if (state.phase !== 'resolving') return
     const id = setTimeout(() => {
       const s = stateRef.current
-      if (s.dragonHp <= 0) onEnd('WIN', s.score)
-      else if (s.wizardHp <= 0) onEnd('LOSE', s.score)
+      if (s.dragonHp <= 0) onEnd('WIN', s.score, s.wizardHp)
+      else if (s.wizardHp <= 0) onEnd('LOSE', s.score, s.wizardHp)
       else dispatch({ type: 'NEXT' })
     }, TURN_DELAY)
     return () => clearTimeout(id)

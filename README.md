@@ -14,13 +14,23 @@ playable on mobile and desktop. Made for Thai students.
   | **Hard**   | 4s  | 3 | 30 |
 - Read the English word and tap the correct Thai meaning (A–D).
   - ✅ Any correct answer in time → Dragon **−1 HP**.
-  - ⚡ Answering within **5s** still fires the flashier **Critical** blue beam and
-    earns **double score** (same 1 damage).
+  - ⚡ Answer within the **first half** of the timer → flashier **Critical** blue
+    beam + **double** the base points (still 1 damage).
+  - ➕ Every correct answer adds a speed bonus of **10 × seconds left**.
   - ❌ Wrong or timeout → Wizard **−1 HP**.
 - Reduce the Dragon's HP to 0 to **win**; if your HP hits 0 you **lose**.
+- Winning grants an end bonus of **500 × surviving Wizard HP**.
 - Toggle 🎵 music and 🔊 sound effects any time (audio is fully synthesized via
   the Web Audio API — no audio files needed). **Music is off by default; sound
   effects are on.** The background theme is a gentle "Greensleeves"-style tune.
+
+### Scoreboard
+
+- Each mode keeps its own **top-20** high-score board (name, score, when played,
+  and surviving HP), stored locally in the browser (`localStorage`).
+- Finish a run with a qualifying total and you're prompted to **enter your name**.
+- View boards any time from the **🏆 SCOREBOARD** button on the title screen.
+- Boards **reset weekly**, at the start of every **Monday** (local time).
 
 ## Run it
 

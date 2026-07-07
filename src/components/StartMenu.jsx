@@ -8,7 +8,7 @@ const DETAILS = {
   HARD: '4s / question · Wizard 3 HP · Dragon 30 HP',
 }
 
-export default function StartMenu({ onStart, loading, error, count }) {
+export default function StartMenu({ onStart, onScoreboard, loading, error, count }) {
   return (
     <div className="screen start-menu">
       <div className="title-block">
@@ -35,6 +35,10 @@ export default function StartMenu({ onStart, loading, error, count }) {
           </button>
         ))}
       </div>
+
+      <button className="pill-btn ghost menu-scoreboard" onClick={onScoreboard}>
+        🏆 SCOREBOARD
+      </button>
 
       <div className="menu-status">
         {loading && <span>Loading vocabulary…</span>}
