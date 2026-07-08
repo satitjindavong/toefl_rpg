@@ -15,13 +15,13 @@ export default function StartMenu({ onStart, onScoreboard, onOpenExam, activeExa
       <div className="title-block">
         <img className="menu-wizard" src={`${import.meta.env.BASE_URL}sprites/wizard_idle.png`} alt="" />
         <h1 className="game-title">
-          <span className="t1">TOEFL</span>
-          <span className="t2">VOCAB BATTLE</span>
+          <span className="t1">MAGE</span>
+          <span className="t2">SPELL BATTLE</span>
         </h1>
         <img className="menu-dragon" src={`${import.meta.env.BASE_URL}sprites/dragon_idle.png`} alt="" />
       </div>
 
-      <p className="subtitle">Defeat the dragon by mastering English vocabulary!</p>
+      <p className="subtitle">Defeat the dragon by mastering your vocabulary!</p>
 
       <button className="exam-pill" onClick={onOpenExam} title="Choose question set">
         <span className="exam-pill-ic">📚</span>

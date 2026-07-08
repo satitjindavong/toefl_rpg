@@ -1,8 +1,8 @@
-# TOEFL Vocab Battle 🧙‍♂️🔥🐉
+# Mage Spell Battle 🧙‍♂️🔥🐉
 
-A vertical **pixel-art RPG** where a Wizard battles a Dragon by answering
-TOEFL-level English → Thai vocabulary questions. Built with **React + Vite**,
-playable on mobile and desktop. Made for Thai students.
+A vertical **pixel-art RPG** where a Mage battles a Dragon by answering
+vocabulary multiple-choice questions from swappable question sets (English →
+Thai, and more). Built with **React + Vite**, playable on mobile and desktop.
 
 ## How to play
 
@@ -52,8 +52,8 @@ npm run preview
 ```
 game/
 ├─ public/
-│  ├─ exam.txt            # vocabulary database (500 questions)
-│  ├─ background.png      # forest battle backdrop
+│  ├─ default.txt         # default question set (+ any other *.txt sets)
+│  ├─ background.png      # sky / castle battle backdrop
 │  └─ sprites/            # extracted per-state character sprites (PNG)
 └─ src/
    ├─ App.jsx             # routing + BGM + global state
