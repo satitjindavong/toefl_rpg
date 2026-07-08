@@ -26,11 +26,14 @@ Thai, and more). Built with **React + Vite**, playable on mobile and desktop.
 
 ### Scoreboard
 
-- Each mode keeps its own **top-20** high-score board (name, score, when played,
-  and surviving HP), stored locally in the browser (`localStorage`).
+- Each set + mode keeps its own **top-20** high-score board (name, score, when
+  played, and surviving HP).
 - Finish a run with a qualifying total and you're prompted to **enter your name**.
 - View boards any time from the **🏆 SCOREBOARD** button on the title screen.
-- Boards **reset weekly**, at the start of every **Monday** (local time).
+- Boards are **persisted in the browser** (`localStorage`, with a cookie
+  fallback for in-app browsers that wipe `localStorage`), so scores survive
+  closing the tab/browser. They are **per device** — there is no server/database,
+  scores aren't shared between players, and they are not auto-cleared.
 
 ## Run it
 

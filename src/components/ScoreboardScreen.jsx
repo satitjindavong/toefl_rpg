@@ -1,10 +1,10 @@
-// Weekly scoreboard: one tab per difficulty, showing the top 20 runs with the
+// Session scoreboard: one tab per difficulty, showing the top 20 runs with the
 // player's name, score, when they played, and how much Wizard HP survived.
 
 import { useState } from 'react'
 import { DIFFICULTIES } from '../game/constants.js'
 import { examLabel } from '../game/questions.js'
-import { MODES, getAllBoards, nextResetTs } from '../game/scoreboard.js'
+import { MODES, getAllBoards } from '../game/scoreboard.js'
 
 function fmtWhen(ts) {
   try {
@@ -19,14 +19,6 @@ function fmtWhen(ts) {
   }
 }
 
-function fmtDate(ts) {
-  try {
-    return new Date(ts).toLocaleDateString('th-TH', { day: 'numeric', month: 'short' })
-  } catch {
-    return '-'
-  }
-}
-
 export default function ScoreboardScreen({ exam, onBack }) {
   const [mode, setMode] = useState('EASY')
   const boards = getAllBoards(exam)
@@ -36,7 +28,7 @@ export default function ScoreboardScreen({ exam, onBack }) {
     <div className="screen scoreboard">
       <h1 className="sb-heading">🏆 SCOREBOARD</h1>
       <p className="sb-exam th">ชุดข้อสอบ: <strong>{examLabel(exam)}</strong></p>
-      <p className="sb-reset th">ล้างคะแนนใหม่ทุกวันจันทร์ · รอบถัดไป {fmtDate(nextResetTs())}</p>
+      <p className="sb-reset th">คะแนนบันทึกไว้ในเบราว์เซอร์นี้ (เฉพาะเครื่องนี้)</p>
 
       <div className="sb-tabs">
         {MODES.map((m) => (

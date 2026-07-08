@@ -1,36 +1,21 @@
-// High-score boards, kept separately per question-set (exam file) and per
-// difficulty. Persisted in localStorage (+ a cookie fallback) and auto-cleared
-// every week (Monday 00:00 local time). Keeps the top 20 scores per board.
+// High-score boards, kept per question-set (exam file) and per difficulty.
+// Persisted in the browser (localStorage + a cookie fallback) so scores survive
+// closing the tab/browser. Per device — there is no server, and scores are not
+// shared between players or auto-cleared. Keeps the top 20 scores per board.
 
 import { DEFAULT_EXAM } from './questions.js'
 
 export const MODES = ['EASY', 'MEDIUM', 'HARD']
-const KEY = 'toefl-vocab-scoreboard-v1'
+const KEY = 'mage-spell-scoreboard'
 const MAX = 20
-
-// Timestamp (ms) of the most recent Monday 00:00 local time — the current
-// "week bucket". When real time crosses into the next Monday this value
-// changes, which triggers a reset on the next load().
-export function weekStartTs(d = new Date()) {
-  const x = new Date(d)
-  x.setHours(0, 0, 0, 0)
-  const back = (x.getDay() + 6) % 7 // days since Monday (getDay: 0=Sun..6=Sat)
-  x.setDate(x.getDate() - back)
-  return x.getTime()
-}
-
-// The instant the board next resets (start of the coming Monday).
-export function nextResetTs(d = new Date()) {
-  return weekStartTs(d) + 7 * 24 * 60 * 60 * 1000
-}
 
 function emptyBoards() {
   return { EASY: [], MEDIUM: [], HARD: [] }
 }
 
 // --- Low-level storage --------------------------------------------------------
-// We persist to BOTH localStorage and a long-lived cookie. Some mobile in-app
-// browsers (e.g. LINE / Facebook WebViews) hand each visit a fresh, ephemeral
+// Persist to BOTH localStorage and a long-lived cookie. Some mobile in-app
+// browsers (LINE / Facebook WebViews) hand each visit a fresh, ephemeral
 // localStorage but keep cookies, so the cookie acts as a durable fallback.
 
 function lsGet() {
@@ -80,10 +65,10 @@ function trimSets(sets, perMode) {
 
 function cookiePayload(data) {
   for (let per = 10; per >= 3; per--) {
-    const str = JSON.stringify({ weekStart: data.weekStart, sets: trimSets(data.sets, per) })
+    const str = JSON.stringify({ sets: trimSets(data.sets, per) })
     if (str.length <= 3600 || per === 3) return str
   }
-  return JSON.stringify({ weekStart: data.weekStart, sets: {} })
+  return JSON.stringify({ sets: {} })
 }
 
 function parseMaybe(str) {
@@ -98,7 +83,7 @@ function parseMaybe(str) {
 // Upgrade a pre-multi-set record ({ boards }) to the per-exam shape ({ sets }).
 function migrate(data) {
   if (!data) return data
-  if (!data.sets && data.boards) return { weekStart: data.weekStart, sets: { [DEFAULT_EXAM]: data.boards } }
+  if (!data.sets && data.boards) return { sets: { [DEFAULT_EXAM]: data.boards } }
   return data
 }
 
@@ -107,27 +92,17 @@ function persist(data) {
   cookieSet(cookiePayload(data))
 }
 
-// Load the record, recovering from whichever store survived and resetting only
-// when we've genuinely rolled into a new week.
-export function load() {
-  const cur = weekStartTs()
+// Read the record, recovering from whichever store survived.
+function read() {
   const fromLs = parseMaybe(lsGet())
   const fromCookie = parseMaybe(cookieGet())
-  let data = fromLs || fromCookie
-  if (fromLs && fromCookie && fromCookie.weekStart === fromLs.weekStart) {
-    data = fromLs // same week: localStorage is the complete copy
-  }
-  data = migrate(data)
-
-  if (!data || data.weekStart !== cur) {
-    data = { weekStart: cur, sets: {} }
-    persist(data)
+  let data = migrate(fromLs || fromCookie)
+  if (!data || !data.sets) {
+    data = { sets: {} }
   } else if (!fromLs && fromCookie) {
     // localStorage was wiped (ephemeral WebView) — rehydrate it from the cookie.
     persist(data)
   }
-
-  if (!data.sets) data.sets = {}
   return data
 }
 
@@ -141,7 +116,7 @@ function boardsFor(data, exam) {
 }
 
 export function getAllBoards(exam) {
-  return boardsFor(load(), exam)
+  return boardsFor(read(), exam)
 }
 
 export function getBoard(exam, mode) {
@@ -158,7 +133,7 @@ export function qualifies(exam, mode, score) {
 
 // Insert a score; returns the 0-based rank if it made the top 20, else -1.
 export function addScore(exam, mode, entry) {
-  const data = load()
+  const data = read()
   const boards = boardsFor(data, exam)
   const board = boards[mode]
   const row = {
