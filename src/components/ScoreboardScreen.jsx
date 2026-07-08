@@ -3,6 +3,7 @@
 
 import { useState } from 'react'
 import { DIFFICULTIES } from '../game/constants.js'
+import { examLabel } from '../game/questions.js'
 import { MODES, getAllBoards, nextResetTs } from '../game/scoreboard.js'
 
 function fmtWhen(ts) {
@@ -26,14 +27,15 @@ function fmtDate(ts) {
   }
 }
 
-export default function ScoreboardScreen({ onBack }) {
+export default function ScoreboardScreen({ exam, onBack }) {
   const [mode, setMode] = useState('EASY')
-  const boards = getAllBoards()
+  const boards = getAllBoards(exam)
   const rows = boards[mode] || []
 
   return (
     <div className="screen scoreboard">
       <h1 className="sb-heading">🏆 SCOREBOARD</h1>
+      <p className="sb-exam th">ชุดข้อสอบ: <strong>{examLabel(exam)}</strong></p>
       <p className="sb-reset th">ล้างคะแนนใหม่ทุกวันจันทร์ · รอบถัดไป {fmtDate(nextResetTs())}</p>
 
       <div className="sb-tabs">

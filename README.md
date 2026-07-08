@@ -83,3 +83,30 @@ Re-run with `python tools/extract_sprites2.py` if the sheet changes.
 vocab, choice1, choice2, choice3, choice4, correct_answer_number(1-4)
 abandon, ละทิ้ง, รุนแรง, รูปแบบ, รัฐบาล, 1
 ```
+
+Choices may not contain commas (the parser splits on `,`). Malformed lines are
+skipped. The loaded-word count on the title screen is derived from the file, so
+dropping in a new file needs no code change (rebuild before deploying).
+
+## Question sets
+
+The game can hold **multiple question sets**. Any `*.txt` file in `public/`
+(e.g. `default.txt`, `toefl_en_5k_words.txt`, `chinese.txt`) is offered in the
+**📚 ชุดข้อสอบ** picker on the title screen; **`default.txt` is the default set**
+(and is listed first). The picker label is derived from the file name
+(`toefl_en_5k_words.txt` → "Toefl En 5k Words").
+
+- A Vite plugin (`examManifest` in `vite.config.js`) scans `public/` and serves
+  `/exam-sets.json` (file name + word count) in dev, and emits it into the
+  build. Just drop a new `*.txt` set in `public/` and rebuild — no code change.
+- Switching sets reloads the questions and updates the word count everywhere.
+- **Scoreboards are per set** (and per difficulty): scores are saved and shown
+  for whichever set is active.
+
+### Languages / fonts
+
+Fonts fall through per glyph: **Fredoka** (Latin) → **Mali** (Thai) → **ZCOOL
+KuaiLe** (Simplified Chinese, a cute rounded CJK face). So English, Thai, and
+Simplified-Chinese question sets all render in-theme. The Chinese font is served
+by Google Fonts in small unicode-range subsets, so its glyphs download only when
+a Chinese set is actually shown.

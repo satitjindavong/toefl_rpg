@@ -1,5 +1,6 @@
-// Header health bars: Wizard (left) and Dragon (right), rendered as heart pips
-// plus a numeric readout, styled like the wooden UI panels in the mock-up.
+// Compact single-line header HUD: Wizard HP as heart pips (small max, never
+// wraps) on the left, Dragon HP as a mini bar + number on the right (a numeric
+// readout keeps it tiny even when the Dragon has 30 HP).
 
 function Hearts({ hp, max, color }) {
   const pips = []
@@ -14,17 +15,23 @@ function Hearts({ hp, max, color }) {
 }
 
 export default function StatusBar({ wizardHp, wizardMax, dragonHp, dragonMax }) {
+  const pct = dragonMax > 0 ? Math.max(0, (dragonHp / dragonMax) * 100) : 0
   return (
     <div className="status-bar">
-      <div className="hp-panel">
-        <div className="hp-title">WIZARD HP:</div>
+      <div className="hp-panel wiz">
+        <span className="hp-title">WIZARD</span>
         <Hearts hp={wizardHp} max={wizardMax} color="#ff5c7a" />
-        <div className="hp-num">({wizardHp})</div>
+        <span className="hp-num">{wizardHp}</span>
       </div>
-      <div className="hp-panel">
-        <div className="hp-title">DRAGON HP:</div>
-        <Hearts hp={dragonHp} max={dragonMax} color="#ff5c7a" />
-        <div className="hp-num">({dragonHp})</div>
+      <div className="hp-panel drg">
+        <span className="hp-title">DRAGON</span>
+        <div className="hp-bar">
+          <div className="hp-bar-fill" style={{ width: `${pct}%` }} />
+        </div>
+        <span className="hp-num">
+          <span className="hp-cur">{dragonHp}</span>
+          <span className="hp-max">/{dragonMax}</span>
+        </span>
       </div>
     </div>
   )

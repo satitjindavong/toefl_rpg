@@ -1,11 +1,42 @@
-// Fetch and parse the vocabulary database (exam.txt) and build a shuffled pool.
+// Fetch and parse a vocabulary database (default.txt or any *.txt set) and build a shuffled pool.
 //
 // Format per line: vocab, choice1, choice2, choice3, choice4, correct_number
 // Example:        abandon, ละทิ้ง, รุนแรง, รูปแบบ, แบบสหพันธรัฐ, 1
 
-export async function loadQuestions() {
-  const res = await fetch(`${import.meta.env.BASE_URL}exam.txt`)
-  if (!res.ok) throw new Error(`Failed to load exam.txt (${res.status})`)
+// The default question set; used when no other set has been chosen.
+export const DEFAULT_EXAM = 'default.txt'
+
+// A friendly display name for a question-set file, e.g. 'default.txt' ->
+// 'Default', 'toefl_en_5k_words.txt' -> 'Toefl En 5k Words'.
+export function examLabel(file) {
+  const base = String(file || '').replace(/\.[^.]+$/, '') // strip extension
+  if (!base || base.toLowerCase() === 'default') return 'Default'
+  return base
+    .replace(/[-_]+/g, ' ')
+    .trim()
+    .replace(/\s+/g, ' ')
+    .split(' ')
+    .map((w) => (w ? w.charAt(0).toUpperCase() + w.slice(1) : w))
+    .join(' ')
+}
+
+// Fetch the list of available question-set files (any *.txt in public/),
+// produced by the exam-manifest Vite plugin. Falls back to just the default.
+export async function loadExamSets() {
+  try {
+    const res = await fetch(`${import.meta.env.BASE_URL}exam-sets.json`)
+    if (!res.ok) throw new Error(String(res.status))
+    const list = await res.json()
+    if (Array.isArray(list) && list.length) return list
+  } catch {
+    /* manifest unavailable — fall through */
+  }
+  return [{ file: DEFAULT_EXAM, count: 0 }]
+}
+
+export async function loadQuestions(file = DEFAULT_EXAM) {
+  const res = await fetch(`${import.meta.env.BASE_URL}${file}`)
+  if (!res.ok) throw new Error(`Failed to load ${file} (${res.status})`)
   const raw = await res.text()
   return parseQuestions(raw)
 }

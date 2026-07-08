@@ -6,17 +6,17 @@ import { DIFFICULTIES, HP_BONUS } from '../game/constants.js'
 import { qualifies, addScore } from '../game/scoreboard.js'
 
 export default function ResultScreen({ info, onPlayAgain, onViewScoreboard }) {
-  const { result, mode, baseScore, hp, bonus, total, ts } = info
+  const { result, exam, mode, baseScore, hp, bonus, total, ts } = info
   const win = result === 'WIN'
   const modeLabel = DIFFICULTIES[mode]?.label || mode
 
-  const eligible = useMemo(() => qualifies(mode, total), [mode, total])
+  const eligible = useMemo(() => qualifies(exam, mode, total), [exam, mode, total])
   const [name, setName] = useState('')
   const [savedRank, setSavedRank] = useState(-1)
   const saved = savedRank >= 0
 
   const handleSave = () => {
-    const rank = addScore(mode, { name, score: total, hp, ts })
+    const rank = addScore(exam, mode, { name, score: total, hp, ts })
     setSavedRank(rank)
   }
 
