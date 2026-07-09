@@ -8,7 +8,7 @@ import { MODES, getAllBoards } from '../game/scoreboard.js'
 
 function fmtWhen(ts) {
   try {
-    return new Date(ts).toLocaleString('th-TH', {
+    return new Date(ts).toLocaleString('en-GB', {
       day: 'numeric',
       month: 'short',
       hour: '2-digit',
@@ -27,8 +27,8 @@ export default function ScoreboardScreen({ exam, onBack }) {
   return (
     <div className="screen scoreboard">
       <h1 className="sb-heading">🏆 SCOREBOARD</h1>
-      <p className="sb-exam th">ชุดข้อสอบ: <strong>{examLabel(exam)}</strong></p>
-      <p className="sb-reset th">คะแนนบันทึกไว้ในเบราว์เซอร์นี้ (เฉพาะเครื่องนี้)</p>
+      <p className="sb-exam">Exam set: <strong>{examLabel(exam)}</strong></p>
+      <p className="sb-reset">Scores are saved in this browser (this device only)</p>
 
       <div className="sb-tabs">
         {MODES.map((m) => (
@@ -44,7 +44,7 @@ export default function ScoreboardScreen({ exam, onBack }) {
 
       <div className="sb-table-wrap">
         {rows.length === 0 ? (
-          <p className="sb-empty th">ยังไม่มีคะแนนในโหมดนี้ — มาเป็นคนแรกกันเถอะ!</p>
+          <p className="sb-empty">No scores yet in this mode — be the first!</p>
         ) : (
           <table className="sb-table">
             <thead>
@@ -62,7 +62,7 @@ export default function ScoreboardScreen({ exam, onBack }) {
                   <td className="c-rank">{i + 1}</td>
                   <td className="c-name">{r.name}</td>
                   <td className="c-score">{r.score.toLocaleString()}</td>
-                  <td className="c-when th">{fmtWhen(r.ts)}</td>
+                  <td className="c-when">{fmtWhen(r.ts)}</td>
                   <td className="c-hp">{'♥'.repeat(Math.min(r.hp, 5)) || '–'}</td>
                 </tr>
               ))}

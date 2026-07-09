@@ -8,8 +8,8 @@ export default function ExamSelectScreen({ sets, activeExam, onChoose, onBack })
 
   return (
     <div className="screen exam-select">
-      <h1 className="es-heading">📚 ชุดข้อสอบ</h1>
-      <p className="es-sub th">เลือกชุดคำศัพท์ที่จะเล่น</p>
+      <h1 className="es-heading">📚 Exam Sets</h1>
+      <p className="es-sub">Choose a word set to play</p>
 
       <div className="es-list">
         {list.map((s) => {
@@ -25,7 +25,7 @@ export default function ExamSelectScreen({ sets, activeExam, onChoose, onBack })
                 <span className="es-label">{examLabel(s.file)}</span>
                 <span className="es-file">{s.file}</span>
               </span>
-              <span className="es-count">{s.count ? `${s.count.toLocaleString()} คำ` : ''}</span>
+              <span className="es-count">{s.count ? `${s.count.toLocaleString()} words` : ''}</span>
             </button>
           )
         })}

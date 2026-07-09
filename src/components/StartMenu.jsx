@@ -26,8 +26,8 @@ export default function StartMenu({ onStart, onScoreboard, onOpenExam, activeExa
       <button className="exam-pill" onClick={onOpenExam} title="Choose question set">
         <span className="exam-pill-ic">📚</span>
         <span className="exam-pill-text">
-          ชุดข้อสอบ: <strong>{examLabel(activeExam)}</strong>
-          {!loading && !error && <span className="exam-pill-count"> · {count} คำ</span>}
+          Exam set: <strong>{examLabel(activeExam)}</strong>
+          {!loading && !error && <span className="exam-pill-count"> · {count} words</span>}
         </span>
         <span className="exam-pill-chev">▾</span>
       </button>

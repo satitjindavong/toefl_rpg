@@ -28,7 +28,7 @@ export default function ResultScreen({ info, onPlayAgain, onViewScoreboard }) {
         alt=""
       />
       <h1 className="result-title">{win ? 'YOU WIN!' : 'YOU LOST'}</h1>
-      <p className="result-sub th">{win ? 'มังกรพ่ายแพ้แล้ว! เก่งมาก!' : 'อย่ายอมแพ้ ลองอีกครั้ง!'}</p>
+      <p className="result-sub">{win ? 'The dragon is defeated — well done!' : "Don't give up — try again!"}</p>
 
       <div className="score-breakdown">
         <div className="sb-line">
@@ -48,7 +48,7 @@ export default function ResultScreen({ info, onPlayAgain, onViewScoreboard }) {
 
       {eligible && !saved && (
         <div className="name-entry">
-          <div className="name-entry-title th">🏆 ทำคะแนนติดอันดับ! ใส่ชื่อของคุณ</div>
+          <div className="name-entry-title">🏆 New high score! Enter your name</div>
           <div className="name-entry-row">
             <input
               className="name-input"
@@ -68,8 +68,8 @@ export default function ResultScreen({ info, onPlayAgain, onViewScoreboard }) {
       )}
 
       {saved && (
-        <div className="saved-note th">
-          🎉 บันทึกแล้ว! คุณอยู่อันดับ <span className="accent">#{savedRank + 1}</span> ของโหมด {modeLabel}
+        <div className="saved-note">
+          🎉 Saved! You're ranked <span className="accent">#{savedRank + 1}</span> in {modeLabel} mode
         </div>
       )}
 
