@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import StartMenu from './components/StartMenu.jsx'
 import GameContainer from './components/GameContainer.jsx'
 import ResultScreen from './components/ResultScreen.jsx'
@@ -6,6 +6,7 @@ import ScoreboardScreen from './components/ScoreboardScreen.jsx'
 import ExamSelectScreen from './components/ExamSelectScreen.jsx'
 import { loadQuestions, loadExamSets, DEFAULT_EXAM } from './game/questions.js'
 import { DIFFICULTIES, HP_BONUS } from './game/constants.js'
+import { themeForExam } from './game/themes.js'
 import { audio } from './audio/audioEngine.js'
 
 export default function App() {
@@ -21,6 +22,9 @@ export default function App() {
   const [sound, setSound] = useState({ bgm: false, sfx: true })
   const soundRef = useRef(sound)
   soundRef.current = sound
+
+  // Scene / characters / music are chosen by the active question set.
+  const theme = useMemo(() => themeForExam(activeExam), [activeExam])
 
   // Discover the available question-set files once on startup.
   useEffect(() => {
@@ -47,12 +51,12 @@ export default function App() {
 
   // Drive background music from the game state.
   useEffect(() => {
-    if (gameState === 'PLAYING') audio.playMainBgm()
+    if (gameState === 'PLAYING') audio.playBgm(theme.music)
     else if (gameState === 'WIN') audio.playWinBgm()
     else if (gameState === 'LOSE') audio.playLoseBgm()
     else audio.stopBgm()
     return () => {}
-  }, [gameState])
+  }, [gameState, theme])
 
   const startGame = (diffKey) => {
     audio.unlock()
@@ -107,6 +111,7 @@ export default function App() {
             onScoreboard={openScoreboard}
             onOpenExam={openExamSelect}
             activeExam={activeExam}
+            theme={theme}
             loading={loading}
             error={error}
             count={questions.length}
@@ -129,6 +134,7 @@ export default function App() {
             key={`${difficulty.key}-${gameId}`}
             questions={questions}
             config={difficulty}
+            theme={theme}
             sound={sound}
             onSound={toggleSound}
             onEnd={handleEnd}
@@ -138,6 +144,7 @@ export default function App() {
         {(gameState === 'WIN' || gameState === 'LOSE') && endInfo && (
           <ResultScreen
             info={endInfo}
+            theme={theme}
             onPlayAgain={backToMenu}
             onViewScoreboard={openScoreboard}
           />

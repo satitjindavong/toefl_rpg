@@ -72,8 +72,8 @@ body {
 
 /* sprites stay crisp pixel-art */
 .fighter,
-.menu-wizard,
-.menu-dragon,
+.menu-hero,
+.menu-enemy,
 .result-sprite {
   image-rendering: -webkit-optimize-contrast;
   image-rendering: pixelated;
@@ -329,11 +329,11 @@ body {
   filter: drop-shadow(2px 4px 3px rgba(60, 50, 80, 0.35));
 }
 
-.wizard {
+.hero {
   left: 6%;
 }
 
-.dragon {
+.enemy {
   right: 4%;
   height: 46%;
   max-height: 165px;
@@ -348,12 +348,12 @@ body {
   z-index: 1;
 }
 
-.wizard-shadow {
+.hero-shadow {
   left: 6%;
   width: 80px;
 }
 
-.dragon-shadow {
+.enemy-shadow {
   right: 4%;
   width: 110px;
 }
@@ -363,7 +363,7 @@ body {
   animation: bob 2.2s ease-in-out infinite;
 }
 
-.dragon.anim-idle {
+.enemy.anim-idle {
   animation: bob 2.6s ease-in-out infinite;
 }
 
@@ -373,8 +373,8 @@ body {
 }
 
 /* attacking lean */
-.anim-cast_blue,
-.anim-cast_fire {
+.anim-cast_crit,
+.anim-cast_normal {
   animation: lunge 0.5s ease;
 }
 
@@ -395,12 +395,12 @@ body {
   60% { transform: translateX(3px); }
 }
 
-/* dragon recoil */
-.dragon.anim-hurt {
-  animation: dragonHurt 0.5s ease;
+/* enemy recoil */
+.enemy.anim-hurt {
+  animation: enemyHurt 0.5s ease;
 }
 
-@keyframes dragonHurt {
+@keyframes enemyHurt {
   0%, 100% { filter: drop-shadow(2px 4px 3px rgba(60, 50, 80, 0.35)); }
   25% { filter: brightness(1.7) sepia(1) hue-rotate(-30deg) saturate(4); transform: translateX(10px); }
 }
@@ -677,8 +677,8 @@ body {
   margin-bottom: clamp(4px, 1.2vh, 8px);
 }
 
-.menu-wizard,
-.menu-dragon {
+.menu-hero,
+.menu-enemy {
   height: clamp(56px, 10vh, 82px);
   filter: drop-shadow(2px 3px 2px rgba(90, 70, 110, 0.35));
   animation: bob 2.4s ease-in-out infinite;
@@ -1265,4 +1265,398 @@ body {
   .result-sprite { height: 84px; }
   .result-title { font-size: 30px; }
   .score-breakdown { padding: 9px 14px; }
+}
+
+/* ============================================================
+   THEMED ATTACK EFFECTS
+   ============================================================ */
+
+/* The enemy lunges toward the hero (leftwards) when it attacks. */
+.enemy.anim-attack {
+  animation: lungeLeft 0.6s ease;
+}
+
+@keyframes lungeLeft {
+  0% { transform: translateX(0); }
+  40% { transform: translateX(-14px) scale(1.05); }
+  100% { transform: translateX(0); }
+}
+
+/* ---- Ink slash (critical, wuxia theme) --------------------- */
+.ink-streak {
+  position: absolute;
+  left: 22%;
+  bottom: 42%;
+  width: 52%;
+  height: 14px;
+  transform-origin: left center;
+  border-radius: 50% 40% 40% 50% / 60% 50% 50% 60%;
+  background: linear-gradient(90deg, rgba(18, 18, 24, 0) 0%, #23232b 35%, #0f0f14 100%);
+  box-shadow: 0 0 10px 2px rgba(20, 20, 30, 0.45);
+  animation: inkSlash 0.6s ease-out;
+}
+
+@keyframes inkSlash {
+  0% { transform: scaleX(0) rotate(-6deg); opacity: 0.3; }
+  35% { transform: scaleX(1) rotate(-2deg); opacity: 1; }
+  100% { transform: scaleX(1) rotate(2deg); opacity: 0; }
+}
+
+.impact.ink {
+  right: 14%;
+  bottom: 36%;
+  width: 54px;
+  height: 54px;
+  background: radial-gradient(circle, #1b1b22 0%, rgba(30, 30, 40, 0.6) 45%, rgba(30, 30, 40, 0) 72%);
+  animation: burst 0.6s ease-out 0.26s;
+}
+
+/* ---- Thrown book (normal, wuxia theme) --------------------- */
+.proj-book {
+  position: absolute;
+  left: 24%;
+  bottom: 40%;
+  height: 32px;
+  image-rendering: pixelated;
+  filter: drop-shadow(1px 2px 2px rgba(0, 0, 0, 0.35));
+  animation: bookFly 0.62s ease-in forwards;
+}
+
+@keyframes bookFly {
+  0% { left: 24%; opacity: 1; transform: rotate(0deg) scale(0.8); }
+  85% { left: 68%; opacity: 1; transform: rotate(540deg) scale(1); }
+  100% { left: 70%; opacity: 0; transform: rotate(640deg) scale(1.1); }
+}
+
+.impact.book {
+  right: 14%;
+  bottom: 36%;
+  background: radial-gradient(circle, #f0e2c0, rgba(190, 160, 110, 0) 70%);
+  animation: burst 0.6s ease-out 0.44s;
+}
+
+/* ---- Panda fart (enemy attack, wuxia theme) ---------------- */
+.fart-cloud {
+  position: absolute;
+  right: 22%;
+  bottom: 24%;
+  width: 34px;
+  height: 30px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 60% 50%, rgba(196, 232, 128, 0.95), rgba(140, 200, 90, 0.75) 55%, rgba(120, 180, 80, 0) 78%);
+  filter: blur(1px);
+  animation: fartDrift 0.75s ease-out forwards;
+}
+
+@keyframes fartDrift {
+  0% { right: 22%; opacity: 0; transform: scale(0.5); }
+  15% { opacity: 0.95; }
+  100% { right: 66%; opacity: 0; transform: scale(2.1); }
+}
+
+.impact.fart {
+  left: 10%;
+  bottom: 32%;
+  width: 56px;
+  height: 56px;
+  background: radial-gradient(circle, rgba(196, 232, 128, 0.9), rgba(140, 200, 90, 0) 70%);
+  animation: burst 0.7s ease-out 0.42s;
+}
+
+/* ============================================================
+   CHINESE (WUXIA) THEME TUNING
+   ============================================================ */
+/* dirt clearing instead of the default grassy band */
+.arena.theme-chinese::after {
+  background: linear-gradient(180deg, rgba(170, 140, 90, 0) 0%, rgba(150, 120, 75, 0.2) 70%, rgba(130, 105, 65, 0.32) 100%);
+}
+
+.theme-chinese .hero {
+  height: 40%;
+  max-height: 140px;
+}
+
+.theme-chinese .enemy {
+  height: 40%;
+  max-height: 140px;
+}
+
+/* the knocked-out panda frame is wide and short */
+.theme-chinese .enemy.anim-die {
+  height: 20%;
+  max-height: 68px;
+}
+
+.theme-chinese .hero-shadow {
+  width: 60px;
+}
+
+.theme-chinese .enemy-shadow {
+  width: 86px;
+}
+
+/* The wuxia hero is smooth illustration art (unlike the blocky panda and
+   backdrop), so let it scale down with interpolation instead of nearest-neighbour. */
+.theme-chinese .hero,
+.theme-chinese .proj-book,
+.theme-chinese .menu-hero,
+.theme-chinese .result-sprite {
+  image-rendering: auto;
+}
+
+/* Some themes have no defeated frame (they reuse idle) — make the lose portrait
+   clearly read as beaten rather than idly bobbing. */
+.result.lose .result-sprite {
+  animation: none;
+  transform: rotate(-8deg);
+  filter: grayscale(0.45) brightness(0.92) drop-shadow(2px 4px 3px rgba(90, 70, 110, 0.4));
+}
+
+/* ============================================================
+   KID THEME EFFECTS (sword slash / lollipop / dino roar)
+   ============================================================ */
+
+/* ---- Sword slash (critical) -------------------------------- */
+.slash-arc {
+  position: absolute;
+  left: 26%;
+  bottom: 38%;
+  width: 62px;
+  height: 62px;
+  border-radius: 50%;
+  border: 6px solid transparent;
+  border-top-color: #ffffff;
+  border-right-color: #a8e9ff;
+  filter: drop-shadow(0 0 6px rgba(150, 225, 255, 0.9));
+  animation: slashSweep 0.55s ease-out forwards;
+}
+
+@keyframes slashSweep {
+  0% { left: 26%; opacity: 0; transform: rotate(-55deg) scale(0.55); }
+  25% { opacity: 1; }
+  100% { left: 64%; opacity: 0; transform: rotate(25deg) scale(1.25); }
+}
+
+.impact.slash {
+  right: 14%;
+  bottom: 36%;
+  width: 56px;
+  height: 56px;
+  background: radial-gradient(circle, #ffffff, #a8e9ff 40%, rgba(150, 225, 255, 0) 72%);
+  animation: burst 0.6s ease-out 0.3s;
+}
+
+/* ---- Thrown lollipop (normal) ------------------------------ */
+.proj-candy {
+  position: absolute;
+  left: 24%;
+  bottom: 40%;
+  height: 26px;
+  image-rendering: pixelated;
+  filter: drop-shadow(1px 2px 2px rgba(0, 0, 0, 0.3));
+  animation: candyFly 0.62s ease-in forwards;
+}
+
+@keyframes candyFly {
+  0% { left: 24%; opacity: 1; transform: rotate(0deg) scale(0.8); }
+  85% { left: 68%; opacity: 1; transform: rotate(700deg) scale(1); }
+  100% { left: 70%; opacity: 0; transform: rotate(800deg) scale(1.15); }
+}
+
+.impact.candy {
+  right: 14%;
+  bottom: 36%;
+  background: radial-gradient(circle, #fff3ab, #ffb3d9 45%, rgba(255, 179, 217, 0) 72%);
+  animation: burst 0.6s ease-out 0.44s;
+}
+
+/* ---- Dino roar (enemy attack) ------------------------------ */
+.roar-wave {
+  position: absolute;
+  right: 20%;
+  bottom: 36%;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 5px solid rgba(255, 170, 110, 0.95);
+  animation: roarPush 0.7s ease-out forwards;
+}
+
+.roar-wave.delay {
+  animation-delay: 0.14s;
+  border-color: rgba(255, 205, 150, 0.8);
+}
+
+@keyframes roarPush {
+  0% { right: 20%; opacity: 0; transform: scale(0.4); }
+  15% { opacity: 1; }
+  100% { right: 62%; opacity: 0; transform: scale(2.6); }
+}
+
+.impact.roar {
+  left: 10%;
+  bottom: 32%;
+  width: 56px;
+  height: 56px;
+  background: radial-gradient(circle, rgba(255, 195, 135, 0.9), rgba(255, 150, 100, 0) 70%);
+  animation: burst 0.7s ease-out 0.4s;
+}
+
+/* ---- Kid theme tuning -------------------------------------- */
+.theme-kid .hero {
+  height: 40%;
+  max-height: 140px;
+}
+
+.theme-kid .enemy {
+  height: 42%;
+  max-height: 148px;
+}
+
+/* the knocked-out dino frame is wide and short (and carries dizzy sparkles) */
+.theme-kid .enemy.anim-die {
+  height: 30%;
+  max-height: 104px;
+}
+
+.theme-kid .hero-shadow {
+  width: 62px;
+}
+
+.theme-kid .enemy-shadow {
+  width: 88px;
+}
+
+/* ============================================================
+   HIGH-SCHOOL THEME EFFECTS (light arrows / fire arrow / shock)
+   ============================================================ */
+
+/* ---- Three light arrows (critical) ------------------------- */
+.proj-arrows {
+  position: absolute;
+  left: 22%;
+  bottom: 34%;
+  height: 34%;
+  max-height: 96px;
+  image-rendering: pixelated;
+  filter: drop-shadow(0 0 6px rgba(140, 220, 255, 0.9));
+  animation: arrowsFly 0.6s ease-out forwards;
+}
+
+@keyframes arrowsFly {
+  0% { left: 22%; opacity: 0; transform: scale(0.6); }
+  20% { opacity: 1; }
+  85% { left: 58%; opacity: 1; transform: scale(1.05); }
+  100% { left: 60%; opacity: 0; transform: scale(1.15); }
+}
+
+.impact.arrows {
+  right: 12%;
+  bottom: 36%;
+  width: 58px;
+  height: 58px;
+  background: radial-gradient(circle, #ffffff, #a8e2ff 40%, rgba(140, 220, 255, 0) 72%);
+  animation: burst 0.6s ease-out 0.3s;
+}
+
+/* ---- Fire arrow (normal) ----------------------------------- */
+.proj-firearrow {
+  position: absolute;
+  left: 24%;
+  bottom: 42%;
+  height: 22px;
+  image-rendering: pixelated;
+  filter: drop-shadow(0 0 8px rgba(255, 160, 60, 0.9));
+  animation: fireArrowFly 0.62s ease-in forwards;
+}
+
+@keyframes fireArrowFly {
+  0% { left: 24%; opacity: 1; transform: scale(0.85); }
+  85% { left: 68%; opacity: 1; transform: scale(1.05); }
+  100% { left: 70%; opacity: 0; transform: scale(1.2); }
+}
+
+.impact.firearrow {
+  right: 14%;
+  bottom: 36%;
+  background: radial-gradient(circle, #fff0b0, #ff9d3e 45%, rgba(255, 120, 40, 0) 72%);
+  animation: burst 0.6s ease-out 0.44s;
+}
+
+/* ---- Hamster electric aura (enemy attack) ------------------ */
+.shock-aura {
+  position: absolute;
+  right: 2%;
+  bottom: 8%;
+  width: 26%;
+  height: 46%;
+  border-radius: 50%;
+  border: 3px solid rgba(150, 240, 255, 0.9);
+  box-shadow: 0 0 20px 7px rgba(90, 210, 255, 0.5), inset 0 0 20px rgba(160, 240, 255, 0.6);
+  animation: shockPulse 0.7s ease-out forwards;
+}
+
+@keyframes shockPulse {
+  0% { opacity: 0; transform: scale(0.6); }
+  18% { opacity: 1; transform: scale(1.06); }
+  55% { opacity: 0.85; transform: scale(0.94); }
+  100% { opacity: 0; transform: scale(1.3); }
+}
+
+.shock-bolt {
+  position: absolute;
+  right: 22%;
+  bottom: 38%;
+  width: 12px;
+  height: 5px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, rgba(180, 245, 255, 0), #cff6ff 40%, #7fe3ff);
+  box-shadow: 0 0 12px 5px rgba(120, 225, 255, 0.85);
+  transform: skewX(-25deg);
+  animation: boltDrift 0.6s ease-out 0.12s forwards;
+}
+
+@keyframes boltDrift {
+  0% { right: 22%; opacity: 0; width: 12px; }
+  20% { opacity: 1; }
+  100% { right: 60%; opacity: 0; width: 62px; }
+}
+
+.impact.shock {
+  left: 10%;
+  bottom: 32%;
+  width: 58px;
+  height: 58px;
+  background: radial-gradient(circle, #ffffff, rgba(130, 225, 255, 0.85) 40%, rgba(90, 210, 255, 0) 72%);
+  animation: burst 0.7s ease-out 0.42s;
+}
+
+/* ---- High-school theme tuning ------------------------------ */
+.theme-hs .hero {
+  height: 40%;
+  max-height: 140px;
+}
+
+.theme-hs .enemy {
+  height: 38%;
+  max-height: 132px;
+}
+
+/* the fallen frames are wide and short */
+.theme-hs .enemy.anim-die {
+  height: 30%;
+  max-height: 104px;
+}
+
+.theme-hs .hero.anim-die {
+  height: 26%;
+  max-height: 92px;
+}
+
+.theme-hs .hero-shadow {
+  width: 58px;
+}
+
+.theme-hs .enemy-shadow {
+  width: 86px;
 }

@@ -106,6 +106,43 @@ The game can hold **multiple question sets**. Any `*.txt` file in `public/`
 - **Scoreboards are per set** (and per difficulty): scores are saved and shown
   for whichever set is active.
 
+### Themes (scene, characters, music, effects)
+
+A question set can bring its own **scene, characters, music and attack effects**.
+`src/game/themes.js` holds a theme registry matched against the set's file name:
+
+| Set name starts with | Theme | Hero → Enemy | Critical | Normal | Enemy attack | Music |
+| :-- | :-- | :-- | :-- | :-- | :-- | :-- |
+| `chinese…` | Wuxia | Warrior → Panda | ink slash | thrown book | panda fart | pentatonic, "Mo Li Hua"-style |
+| `english_for_kid…` | Kid | Knight → Dino | sword slash | thrown lollipop | dino roar | bouncy C-major cartoon tune |
+| `english_highschool…` | High school | Archer → Hamster | triple light arrow | fire arrow | electric aura | fast, exciting adventure riff |
+| *(anything else)* | Default | Wizard → Dragon | blue beam | fireball | dragon fire | "Greensleeves"-style |
+
+A theme swaps the backdrop, both fighters' sprites (idle / attack / hurt / die),
+the effect visuals, the sound effects, the BGM, and the on-screen character names
+(HUD and menu copy). **Game rules are identical across themes.**
+
+To add a theme for a future set: drop the art in `public/`, add a theme object in
+`themes.js`, and append a prefix rule to `THEME_RULES`.
+
+Themed art lives in `design/assets/` and is extracted into `public/sprites/<theme>/`:
+
+| Theme | Asset | Source | Tool |
+| :-- | :-- | :-- | :-- |
+| Wuxia | hero (sword girl) | `sprite_sheet2_swordgirl.png` | `tools/extract_swordgirl.py` |
+| Wuxia | enemy (panda) | `sprite_sheet2.png` | `tools/extract_sprites_cn.py` |
+| Wuxia | backdrop | `background2.png` | landscape crop (y 100–1029) |
+| Kid | hero + enemy | `sprite_sheet3.png` | `tools/extract_sprites_kid.py` |
+| Kid | backdrop | `background3.png` | landscape crop (y 150–1079) |
+| High school | hero + enemy | `sprite_sheet4.png` | `tools/extract_sprites_hs.py` |
+| High school | backdrop | `background4.png` | landscape crop (y 150–1079) |
+
+The sword-girl and knight sheets have no hurt/defeated frame, so those themes map
+`hurt` and `die` to the idle frame; the CSS hurt-flash and lose-screen
+treatment carry those states. The sword girl is smooth illustration (not blocky
+pixel art), so she renders with `image-rendering: auto`; everything else stays
+crisp.
+
 ### Languages / fonts
 
 Fonts fall through per glyph: **Fredoka** (Latin) → **Mali** (Thai) → **ZCOOL

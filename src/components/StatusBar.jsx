@@ -14,17 +14,17 @@ function Hearts({ hp, max, color }) {
   return <div className="hearts">{pips}</div>
 }
 
-export default function StatusBar({ wizardHp, wizardMax, dragonHp, dragonMax }) {
+export default function StatusBar({ theme, wizardHp, wizardMax, dragonHp, dragonMax }) {
   const pct = dragonMax > 0 ? Math.max(0, (dragonHp / dragonMax) * 100) : 0
   return (
     <div className="status-bar">
       <div className="hp-panel wiz">
-        <span className="hp-title">WIZARD</span>
+        <span className="hp-title">{theme.heroName.toUpperCase()}</span>
         <Hearts hp={wizardHp} max={wizardMax} color="#ff5c7a" />
         <span className="hp-num">{wizardHp}</span>
       </div>
       <div className="hp-panel drg">
-        <span className="hp-title">DRAGON</span>
+        <span className="hp-title">{theme.enemyName.toUpperCase()}</span>
         <div className="hp-bar">
           <div className="hp-bar-fill" style={{ width: `${pct}%` }} />
         </div>

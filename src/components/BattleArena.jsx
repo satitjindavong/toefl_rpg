@@ -1,68 +1,113 @@
-// The battle stage: forest background with the Wizard (left) and Dragon (right),
-// their per-state sprites, and transient attack effects (blue beam / fireball).
+// The battle stage: the theme's backdrop with the hero (left) and enemy (right),
+// their per-state sprites, and the transient attack effect for the current turn.
+//
+// `effect` is semantic ('crit' | 'normal' | 'enemy'); the active theme maps it to
+// a concrete visual (blue beam / fireball / ink slash / thrown book / fart …).
 
-const BASE = import.meta.env.BASE_URL
+import { spriteUrl, backgroundUrl } from '../game/themes.js'
 
-const WIZARD_SPRITES = {
-  idle: 'wizard_idle',
-  cast_blue: 'wizard_blue',
-  cast_fire: 'wizard_fire',
-  hurt: 'wizard_hurt',
-  die: 'wizard_die',
-}
-
-const DRAGON_SPRITES = {
-  idle: 'dragon_idle',
-  hurt: 'dragon_hurt',
-  die: 'dragon_die',
-}
-
-function spriteUrl(name) {
-  return `${BASE}sprites/${name}.png`
-}
-
-export default function BattleArena({ wizardAnim, dragonAnim, effect, shake }) {
-  const wizardSprite = WIZARD_SPRITES[wizardAnim] || WIZARD_SPRITES.idle
-  const dragonSprite = DRAGON_SPRITES[dragonAnim] || DRAGON_SPRITES.idle
+export default function BattleArena({ theme, heroAnim, enemyAnim, effect, shake }) {
+  const heroSprite = theme.hero[heroAnim] || theme.hero.idle
+  const enemySprite = theme.enemy[enemyAnim] || theme.enemy.idle
+  const fx = effect ? theme.fx[effect] : null
+  // Themes may fire a different projectile per attack (`projectiles`), or reuse
+  // one sprite for every projectile effect (`projectile`).
+  const projectile = (effect && theme.projectiles?.[effect]) || theme.projectile
 
   return (
     <div
-      className={`arena ${shake ? 'shake' : ''}`}
-      style={{ backgroundImage: `url(${BASE}background.png)` }}
+      className={`arena theme-${theme.id} ${shake ? 'shake' : ''}`}
+      style={{ backgroundImage: `url(${backgroundUrl(theme)})`, backgroundPosition: theme.bgPosition }}
     >
-      <div className="ground-shadow wizard-shadow" />
-      <div className="ground-shadow dragon-shadow" />
+      <div className="ground-shadow hero-shadow" />
+      <div className="ground-shadow enemy-shadow" />
 
       <img
-        className={`fighter wizard anim-${wizardAnim}`}
-        src={spriteUrl(wizardSprite)}
-        alt="Wizard"
+        className={`fighter hero anim-${heroAnim}`}
+        src={spriteUrl(theme, heroSprite)}
+        alt="Hero"
         draggable="false"
       />
       <img
-        className={`fighter dragon anim-${dragonAnim}`}
-        src={spriteUrl(dragonSprite)}
-        alt="Dragon"
+        className={`fighter enemy anim-${enemyAnim}`}
+        src={spriteUrl(theme, enemySprite)}
+        alt="Enemy"
         draggable="false"
       />
 
       {/* Attack effects */}
-      {effect === 'blue' && (
+      {fx === 'blue' && (
         <div className="fx-layer">
           <div className="beam blue" />
           <div className="impact blue" />
         </div>
       )}
-      {effect === 'fire' && (
+      {fx === 'fire' && (
         <div className="fx-layer">
           <div className="fireball" />
           <div className="impact fire" />
         </div>
       )}
-      {effect === 'enemy' && (
+      {fx === 'enemy' && (
         <div className="fx-layer">
           <div className="enemy-fireball" />
           <div className="impact enemy" />
+        </div>
+      )}
+      {fx === 'ink' && (
+        <div className="fx-layer">
+          <div className="ink-streak" />
+          <div className="impact ink" />
+        </div>
+      )}
+      {fx === 'book' && (
+        <div className="fx-layer">
+          <img className="proj-book" src={spriteUrl(theme, projectile)} alt="" draggable="false" />
+          <div className="impact book" />
+        </div>
+      )}
+      {fx === 'fart' && (
+        <div className="fx-layer">
+          <div className="fart-cloud" />
+          <div className="impact fart" />
+        </div>
+      )}
+      {fx === 'slash' && (
+        <div className="fx-layer">
+          <div className="slash-arc" />
+          <div className="impact slash" />
+        </div>
+      )}
+      {fx === 'candy' && (
+        <div className="fx-layer">
+          <img className="proj-candy" src={spriteUrl(theme, projectile)} alt="" draggable="false" />
+          <div className="impact candy" />
+        </div>
+      )}
+      {fx === 'roar' && (
+        <div className="fx-layer">
+          <div className="roar-wave" />
+          <div className="roar-wave delay" />
+          <div className="impact roar" />
+        </div>
+      )}
+      {fx === 'arrows' && (
+        <div className="fx-layer">
+          <img className="proj-arrows" src={spriteUrl(theme, projectile)} alt="" draggable="false" />
+          <div className="impact arrows" />
+        </div>
+      )}
+      {fx === 'firearrow' && (
+        <div className="fx-layer">
+          <img className="proj-firearrow" src={spriteUrl(theme, projectile)} alt="" draggable="false" />
+          <div className="impact firearrow" />
+        </div>
+      )}
+      {fx === 'shock' && (
+        <div className="fx-layer">
+          <div className="shock-aura" />
+          <div className="shock-bolt" />
+          <div className="impact shock" />
         </div>
       )}
     </div>

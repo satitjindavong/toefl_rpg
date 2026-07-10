@@ -4,8 +4,9 @@
 import { useMemo, useState } from 'react'
 import { DIFFICULTIES, HP_BONUS } from '../game/constants.js'
 import { qualifies, addScore } from '../game/scoreboard.js'
+import { spriteUrl } from '../game/themes.js'
 
-export default function ResultScreen({ info, onPlayAgain, onViewScoreboard }) {
+export default function ResultScreen({ info, theme, onPlayAgain, onViewScoreboard }) {
   const { result, exam, mode, baseScore, hp, bonus, total, ts } = info
   const win = result === 'WIN'
   const modeLabel = DIFFICULTIES[mode]?.label || mode
@@ -21,14 +22,16 @@ export default function ResultScreen({ info, onPlayAgain, onViewScoreboard }) {
   }
 
   return (
-    <div className={`screen result ${win ? 'win' : 'lose'}`}>
+    <div className={`screen result ${win ? 'win' : 'lose'} theme-${theme.id}`}>
       <img
         className="result-sprite"
-        src={`${import.meta.env.BASE_URL}sprites/${win ? 'wizard_idle' : 'wizard_die'}.png`}
+        src={spriteUrl(theme, win ? theme.hero.idle : theme.hero.die)}
         alt=""
       />
       <h1 className="result-title">{win ? 'YOU WIN!' : 'YOU LOST'}</h1>
-      <p className="result-sub">{win ? 'The dragon is defeated — well done!' : "Don't give up — try again!"}</p>
+      <p className="result-sub">
+        {win ? `The ${theme.enemyName.toLowerCase()} is defeated — well done!` : "Don't give up — try again!"}
+      </p>
 
       <div className="score-breakdown">
         <div className="sb-line">

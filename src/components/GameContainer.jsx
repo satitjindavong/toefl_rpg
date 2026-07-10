@@ -30,8 +30,8 @@ function init({ questions, config }) {
     phase: 'answering', // 'answering' | 'resolving'
     selected: null,
     isCorrect: null,
-    wizardAnim: 'idle',
-    dragonAnim: 'idle',
+    heroAnim: 'idle',
+    enemyAnim: 'idle',
     effect: null,
     score: 0,
     combo: 0,
@@ -59,8 +59,8 @@ function reducer(state, action) {
         phase: 'answering',
         selected: null,
         isCorrect: null,
-        wizardAnim: 'idle',
-        dragonAnim: 'idle',
+        heroAnim: 'idle',
+        enemyAnim: 'idle',
         effect: null,
       }
     }
@@ -88,9 +88,9 @@ function resolve(state, { choice = null, timeout = false }) {
       selected: choice,
       isCorrect: true,
       dragonHp,
-      wizardAnim: critical ? 'cast_blue' : 'cast_fire',
-      dragonAnim: dragonHp <= 0 ? 'die' : 'hurt',
-      effect: critical ? 'blue' : 'fire',
+      heroAnim: critical ? 'cast_crit' : 'cast_normal',
+      enemyAnim: dragonHp <= 0 ? 'die' : 'hurt',
+      effect: critical ? 'crit' : 'normal',
       score: state.score + points,
       combo,
     }
@@ -104,14 +104,14 @@ function resolve(state, { choice = null, timeout = false }) {
     selected: choice,
     isCorrect: false,
     wizardHp,
-    wizardAnim: wizardHp <= 0 ? 'die' : 'hurt',
-    dragonAnim: 'idle',
+    heroAnim: wizardHp <= 0 ? 'die' : 'hurt',
+    enemyAnim: 'attack',
     effect: 'enemy',
     combo: 0,
   }
 }
 
-export default function GameContainer({ questions, config, sound, onSound, onEnd }) {
+export default function GameContainer({ questions, config, theme, sound, onSound, onEnd }) {
   const [state, dispatch] = useReducer(reducer, { questions, config }, init)
   const stateRef = useRef(state)
   stateRef.current = state
@@ -128,13 +128,9 @@ export default function GameContainer({ questions, config, sound, onSound, onEnd
   // --- Play SFX when a turn resolves ---------------------------------------
   useEffect(() => {
     if (state.phase !== 'resolving') return
-    if (state.isCorrect) {
-      if (state.effect === 'blue') audio.sfxBlue()
-      else audio.sfxFire()
-    } else {
-      audio.sfxHurt()
-    }
-  }, [state.phase, state.index, state.isCorrect, state.effect])
+    if (state.isCorrect) audio.sfx(theme.sfx[state.effect])
+    else audio.sfx(theme.sfx.enemy)
+  }, [state.phase, state.index, state.isCorrect, state.effect, theme])
 
   // --- After the animation delay: end the game or advance ------------------
   useEffect(() => {
@@ -150,7 +146,7 @@ export default function GameContainer({ questions, config, sound, onSound, onEnd
 
   const handleAnswer = (choice) => {
     if (state.phase !== 'answering') return
-    audio.sfxClick()
+    audio.sfx('click')
     dispatch({ type: 'ANSWER', choice })
   }
 
@@ -159,6 +155,7 @@ export default function GameContainer({ questions, config, sound, onSound, onEnd
   return (
     <div className="game">
       <StatusBar
+        theme={theme}
         wizardHp={state.wizardHp}
         wizardMax={state.wizardMax}
         dragonHp={state.dragonHp}
@@ -176,8 +173,9 @@ export default function GameContainer({ questions, config, sound, onSound, onEnd
       </div>
 
       <BattleArena
-        wizardAnim={state.wizardAnim}
-        dragonAnim={state.dragonAnim}
+        theme={theme}
+        heroAnim={state.heroAnim}
+        enemyAnim={state.enemyAnim}
         effect={state.effect}
         shake={shake}
       />
