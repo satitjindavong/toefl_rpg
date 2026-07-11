@@ -4,12 +4,12 @@
 // `effect` is semantic ('crit' | 'normal' | 'enemy'); the active theme maps it to
 // a concrete visual (blue beam / fireball / ink slash / thrown book / fart …).
 
-import { spriteUrl, backgroundUrl } from '../game/themes.js'
+import { spriteUrl, backgroundUrl, enemySpriteName, fxName } from '../game/themes.js'
 
 export default function BattleArena({ theme, heroAnim, enemyAnim, effect, shake }) {
   const heroSprite = theme.hero[heroAnim] || theme.hero.idle
-  const enemySprite = theme.enemy[enemyAnim] || theme.enemy.idle
-  const fx = effect ? theme.fx[effect] : null
+  const enemySprite = enemySpriteName(theme, enemyAnim)
+  const fx = fxName(theme, effect)
   // Themes may fire a different projectile per attack (`projectiles`), or reuse
   // one sprite for every projectile effect (`projectile`).
   const projectile = (effect && theme.projectiles?.[effect]) || theme.projectile
@@ -54,6 +54,13 @@ export default function BattleArena({ theme, heroAnim, enemyAnim, effect, shake 
           <div className="impact enemy" />
         </div>
       )}
+      {fx === 'flex' && (
+        <div className="fx-layer">
+          <div className="flex-shine" />
+          <div className="flex-spark k1" />
+          <div className="flex-spark k2" />
+        </div>
+      )}
       {fx === 'ink' && (
         <div className="fx-layer">
           <div className="ink-streak" />
@@ -70,6 +77,14 @@ export default function BattleArena({ theme, heroAnim, enemyAnim, effect, shake 
         <div className="fx-layer">
           <div className="fart-cloud" />
           <div className="impact fart" />
+        </div>
+      )}
+      {fx === 'punch' && (
+        <div className="fx-layer">
+          <div className="punch-star s1" />
+          <div className="punch-star s2" />
+          <div className="punch-star s3" />
+          <div className="impact punch" />
         </div>
       )}
       {fx === 'slash' && (
@@ -108,6 +123,13 @@ export default function BattleArena({ theme, heroAnim, enemyAnim, effect, shake 
           <div className="shock-aura" />
           <div className="shock-bolt" />
           <div className="impact shock" />
+        </div>
+      )}
+      {fx === 'slam' && (
+        <div className="fx-layer">
+          <div className="slam-line" />
+          <div className="slam-ring" />
+          <div className="impact slam" />
         </div>
       )}
     </div>

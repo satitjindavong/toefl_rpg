@@ -513,6 +513,45 @@ body {
   100% { opacity: 0; transform: scale(1.7); }
 }
 
+/* ---- Dragon flex / show-off (enemy attack, default theme, timeout) ---- */
+/* The dragon strikes a muscle-flex pose with a golden shine + sparkles.
+   (punchPop is defined with the wuxia punch effect.) */
+.theme-default .enemy.anim-attack_timeout {
+  transform-origin: bottom center;
+  animation: dragonFlex 0.7s ease-in-out;
+}
+
+@keyframes dragonFlex {
+  0%, 100% { transform: scale(1, 1); }
+  30% { transform: scale(1.12, 0.94); }
+  55% { transform: scale(0.97, 1.06); }
+  78% { transform: scale(1.05, 0.98); }
+}
+
+.flex-shine {
+  position: absolute;
+  right: 8%;
+  bottom: 18%;
+  width: 30%;
+  height: 48%;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 244, 190, 0.55), rgba(255, 220, 120, 0) 68%);
+  opacity: 0;
+  animation: burst 0.7s ease-out 0.1s;
+}
+
+.flex-spark {
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  background: radial-gradient(circle, #fffbe0 0%, #ffe14d 45%, rgba(255, 210, 60, 0) 70%);
+  clip-path: polygon(50% 0, 60% 40%, 100% 50%, 60% 60%, 50% 100%, 40% 60%, 0 50%, 40% 40%);
+  opacity: 0;
+}
+
+.flex-spark.k1 { right: 30%; bottom: 54%; animation: punchPop 0.5s ease-out 0.06s; }
+.flex-spark.k2 { right: 19%; bottom: 47%; animation: punchPop 0.5s ease-out 0.3s; }
+
 /* ---- Quiz board ------------------------------------------- */
 .quiz {
   background: var(--panel);
@@ -1363,6 +1402,50 @@ body {
   animation: burst 0.7s ease-out 0.42s;
 }
 
+/* ---- Panda punch flurry (enemy attack, wuxia theme) -------- */
+/* The panda jabs forward several times in quick succession. */
+.theme-chinese .enemy.anim-attack {
+  animation: pandaJab 0.62s ease-out;
+}
+
+@keyframes pandaJab {
+  0%, 100% { transform: translateX(0); }
+  18% { transform: translateX(-22px); }
+  33% { transform: translateX(-6px); }
+  48% { transform: translateX(-24px); }
+  63% { transform: translateX(-8px); }
+  80% { transform: translateX(-20px); }
+}
+
+/* yellow impact stars popping near the hero in quick succession */
+.punch-star {
+  position: absolute;
+  width: 34px;
+  height: 34px;
+  background: radial-gradient(circle, #fff6c0 0%, #ffd23e 45%, rgba(255, 180, 40, 0) 70%);
+  clip-path: polygon(50% 0, 61% 35%, 100% 38%, 68% 60%, 79% 100%, 50% 74%, 21% 100%, 32% 60%, 0 38%, 39% 35%);
+  opacity: 0;
+}
+
+.punch-star.s1 { left: 22%; bottom: 44%; animation: punchPop 0.24s ease-out 0.04s; }
+.punch-star.s2 { left: 16%; bottom: 37%; animation: punchPop 0.24s ease-out 0.22s; }
+.punch-star.s3 { left: 24%; bottom: 33%; animation: punchPop 0.24s ease-out 0.40s; }
+
+@keyframes punchPop {
+  0% { opacity: 0; transform: scale(0.3) rotate(0deg); }
+  50% { opacity: 1; transform: scale(1.15) rotate(20deg); }
+  100% { opacity: 0; transform: scale(1.45) rotate(36deg); }
+}
+
+.impact.punch {
+  left: 12%;
+  bottom: 36%;
+  width: 54px;
+  height: 54px;
+  background: radial-gradient(circle, #ffffff, #ffe08a 45%, rgba(255, 190, 60, 0) 72%);
+  animation: burst 0.5s ease-out 0.42s;
+}
+
 /* ============================================================
    CHINESE (WUXIA) THEME TUNING
    ============================================================ */
@@ -1503,6 +1586,16 @@ body {
 }
 
 /* ---- Kid theme tuning -------------------------------------- */
+/* The kid dino's fart is purple (matches its sprite), unlike the wuxia panda's
+   green one — recolour the shared fart cloud + impact for this theme. */
+.theme-kid .fart-cloud {
+  background: radial-gradient(circle at 60% 50%, rgba(214, 172, 236, 0.95), rgba(176, 122, 214, 0.78) 55%, rgba(150, 100, 196, 0) 78%);
+}
+
+.theme-kid .impact.fart {
+  background: radial-gradient(circle, rgba(214, 172, 236, 0.9), rgba(176, 122, 214, 0) 70%);
+}
+
 .theme-kid .hero {
   height: 40%;
   max-height: 140px;
@@ -1629,6 +1722,72 @@ body {
   height: 58px;
   background: radial-gradient(circle, #ffffff, rgba(130, 225, 255, 0.85) 40%, rgba(90, 210, 255, 0) 72%);
   animation: burst 0.7s ease-out 0.42s;
+}
+
+/* ---- Pig body-slam (enemy, wrong answer) ------------------- */
+/* A big wrestling lunge from the right that crashes onto the hero. Overrides
+   the gentle generic lungeLeft for this theme. */
+.theme-hs .enemy.anim-attack {
+  transform-origin: bottom center;
+  animation: pigSlam 0.6s ease-in;
+  z-index: 3;
+}
+
+@keyframes pigSlam {
+  0% { transform: translate(0, 0) rotate(0); }
+  35% { transform: translate(-110px, -30px) rotate(-16deg) scale(1.08); }
+  55% { transform: translate(-150px, 8px) rotate(-26deg) scale(1.05); }
+  72% { transform: translate(-120px, 0) rotate(-18deg); }
+  100% { transform: translate(0, 0) rotate(0); }
+}
+
+/* speed lines trailing the charge */
+.slam-line {
+  position: absolute;
+  right: 22%;
+  top: 42%;
+  width: 34%;
+  height: 4px;
+  border-radius: 3px;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.85));
+  box-shadow: 0 12px 0 rgba(255, 255, 255, 0.45), 0 -12px 0 rgba(255, 255, 255, 0.45);
+  opacity: 0;
+  animation: slamLine 0.42s ease-out forwards;
+}
+
+@keyframes slamLine {
+  0% { opacity: 0; right: 18%; }
+  30% { opacity: 0.9; }
+  100% { opacity: 0; right: 52%; }
+}
+
+/* dust shockwave ring where the pig lands on the hero */
+.slam-ring {
+  position: absolute;
+  left: 12%;
+  bottom: 20%;
+  width: 72px;
+  height: 34px;
+  border-radius: 50%;
+  border: 4px solid rgba(255, 240, 210, 0.9);
+  box-shadow: 0 0 18px 6px rgba(255, 220, 160, 0.5);
+  opacity: 0;
+  animation: slamRing 0.55s ease-out 0.42s forwards;
+}
+
+@keyframes slamRing {
+  0% { opacity: 0; transform: scale(0.3); }
+  30% { opacity: 1; transform: scale(1.15); }
+  100% { opacity: 0; transform: scale(1.95); }
+}
+
+.impact.slam {
+  left: 14%;
+  bottom: 28%;
+  width: 64px;
+  height: 64px;
+  background: radial-gradient(circle, #ffffff, #ffe1a8 42%, rgba(255, 200, 120, 0) 72%);
+  animation: burst 0.5s ease-out 0.46s;
 }
 
 /* ---- High-school theme tuning ------------------------------ */

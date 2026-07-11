@@ -157,31 +157,28 @@ class AudioEngine {
     this._startLoop(seq.map(([k, d]) => ({ f: N[k], d })), 200, 'triangle')
   }
 
-  // Gentle classical melody in A-minor — "Greensleeves". Soft triangle voice,
-  // durations in eighth-note beats (q=2, dq=3, e=1).
+  // Calm, easy-listening default theme: a soft, slow, lo-fi-style melody in
+  // C major that meanders gently and loops seamlessly. Small steps and long
+  // notes keep it soothing and non-distracting for study. Soft triangle voice,
+  // durations in eighth-note beats.
   playMainBgm() {
     const N = {
-      G3: 196.0, A3: 220.0, B3: 246.94, C4: 261.63, D4: 293.66, E4: 329.63,
-      F4: 349.23, G4: 392.0, Gs4: 415.3, A4: 440.0, B4: 493.88, C5: 523.25,
-      D5: 587.33, E5: 659.25, F5: 698.46, G5: 783.99, R: 0,
+      G3: 196.0, A3: 220.0, C4: 261.63, D4: 293.66, E4: 329.63,
+      F4: 349.23, G4: 392.0, A4: 440.0, B4: 493.88, C5: 523.25, D5: 587.33, R: 0,
     }
     const seq = [
-      // verse: "Alas my love, you do me wrong..."
-      ['A4', 2],
-      ['C5', 3], ['D5', 1], ['E5', 3], ['F5', 1], ['E5', 2],
-      ['D5', 2], ['B4', 3], ['G4', 1], ['A4', 3], ['B4', 1],
-      ['C5', 3], ['A4', 1], ['A4', 2], ['Gs4', 2], ['A4', 4],
-      // repeat with a softer cadence
-      ['A4', 2],
-      ['C5', 3], ['D5', 1], ['E5', 3], ['F5', 1], ['E5', 2],
-      ['D5', 2], ['B4', 3], ['G4', 1], ['A4', 3], ['B4', 1],
-      ['C5', 3], ['B4', 1], ['A4', 2], ['Gs4', 2], ['A4', 4],
-      // chorus: "Greensleeves was all my joy..."
-      ['G5', 3], ['G5', 1], ['F5', 2], ['E5', 3], ['D5', 1],
-      ['B4', 2], ['G4', 2], ['A4', 3], ['B4', 1],
-      ['C5', 3], ['A4', 1], ['A4', 2], ['Gs4', 2], ['A4', 4], ['R', 2],
+      // phrase A — settle in
+      ['E4', 4], ['G4', 2], ['C5', 4], ['B4', 2], ['G4', 4], ['A4', 2],
+      // phrase B — gentle lift
+      ['F4', 4], ['A4', 2], ['C5', 4], ['G4', 2], ['E4', 4], ['D4', 2],
+      // phrase C — drift up and back
+      ['E4', 2], ['G4', 2], ['A4', 2], ['C5', 2], ['A4', 4], ['G4', 2],
+      ['E4', 4], ['D4', 2], ['C4', 6], ['R', 2],
+      // phrase D — soft resolve
+      ['D4', 2], ['E4', 2], ['G4', 4], ['E4', 2], ['C4', 2], ['D4', 4],
+      ['G4', 2], ['A4', 2], ['G4', 4], ['E4', 2], ['C4', 6], ['R', 4],
     ]
-    this._startLoop(seq.map(([k, d]) => ({ f: N[k], d })), 200, 'triangle')
+    this._startLoop(seq.map(([k, d]) => ({ f: N[k], d })), 150, 'triangle')
   }
 
   playWinBgm() {
@@ -213,6 +210,9 @@ class AudioEngine {
       case 'arrow': return this.sfxArrow()
       case 'firearrow': return this.sfxFireArrow()
       case 'shock': return this.sfxShock()
+      case 'slam': return this.sfxSlam()
+      case 'punch': return this.sfxPunch()
+      case 'flex': return this.sfxFlex()
       case 'click': return this.sfxClick()
       default: return undefined
     }
@@ -330,6 +330,48 @@ class AudioEngine {
     o.stop(t + 0.5); lfo.stop(t + 0.5)
     this._noise(t, 0.3, 6000, 2000, 0.3, 'highpass') // sparks
     this._tone(90, t + 0.02, 0.14, 'square', this.sfxGain, 0.22) // body thump
+  }
+
+  // Pig body-slam: a rushing charge whoosh that lands on a heavy body thud.
+  sfxSlam() {
+    this._ensure()
+    const t = this.ctx.currentTime
+    this._noise(t, 0.22, 1400, 320, 0.4, 'lowpass') // charge whoosh
+    // heavy thud on landing: a low sine dropping fast
+    const o = this.ctx.createOscillator()
+    const g = this.ctx.createGain()
+    o.type = 'sine'
+    o.frequency.setValueAtTime(155, t + 0.2)
+    o.frequency.exponentialRampToValueAtTime(48, t + 0.44)
+    g.gain.setValueAtTime(0.0001, t + 0.2)
+    g.gain.exponentialRampToValueAtTime(0.6, t + 0.24)
+    g.gain.exponentialRampToValueAtTime(0.0001, t + 0.5)
+    o.connect(g); g.connect(this.sfxGain)
+    o.start(t + 0.2); o.stop(t + 0.55)
+    this._noise(t + 0.2, 0.18, 520, 120, 0.42, 'lowpass') // impact body
+    this._tone(90, t + 0.22, 0.12, 'square', this.sfxGain, 0.24) // thump
+  }
+
+  // Panda punch flurry: three quick whoosh + thud jabs in rapid succession.
+  sfxPunch() {
+    this._ensure()
+    const t = this.ctx.currentTime
+    for (let i = 0; i < 3; i++) {
+      const s = t + i * 0.12
+      this._noise(s, 0.07, 1700, 500, 0.3, 'lowpass') // jab whoosh
+      this._tone(150, s + 0.03, 0.08, 'square', this.sfxGain, 0.32) // knuckle thud
+      this._tone(90, s + 0.03, 0.09, 'sine', this.sfxGain, 0.26) // body impact
+    }
+  }
+
+  // Dragon flex / show-off: a cheeky rising two-tone taunt topped with a sparkle.
+  sfxFlex() {
+    this._ensure()
+    const t = this.ctx.currentTime
+    this._tone(330, t, 0.12, 'square', this.sfxGain, 0.28) // ta-
+    this._tone(494, t + 0.12, 0.2, 'square', this.sfxGain, 0.32) // -da!
+    this._tone(1568, t + 0.3, 0.1, 'sine', this.sfxGain, 0.22) // sparkle
+    this._tone(2093, t + 0.38, 0.12, 'sine', this.sfxGain, 0.18)
   }
 
   // Sword slash: a bright metallic swish that lands on a short clang.

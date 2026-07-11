@@ -21,8 +21,9 @@ Thai, and more). Built with **React + Vite**, playable on mobile and desktop.
 - Reduce the Dragon's HP to 0 to **win**; if your HP hits 0 you **lose**.
 - Winning grants an end bonus of **500 × surviving Wizard HP**.
 - Toggle 🎵 music and 🔊 sound effects any time (audio is fully synthesized via
-  the Web Audio API — no audio files needed). **Music is off by default; sound
-  effects are on.** The background theme is a gentle "Greensleeves"-style tune.
+  the Web Audio API — no audio files needed). **Music and sound effects are both
+  on by default.** The default background theme is a calm, easy-listening
+  lo-fi-style melody that loops gently without distracting from study.
 
 ### Scoreboard
 
@@ -113,34 +114,53 @@ A question set can bring its own **scene, characters, music and attack effects**
 
 | Set name starts with | Theme | Hero → Enemy | Critical | Normal | Enemy attack | Music |
 | :-- | :-- | :-- | :-- | :-- | :-- | :-- |
-| `chinese…` | Wuxia | Warrior → Panda | ink slash | thrown book | panda fart | pentatonic, "Mo Li Hua"-style |
-| `english_for_kid…` | Kid | Knight → Dino | sword slash | thrown lollipop | dino roar | bouncy C-major cartoon tune |
-| `english_highschool…` | High school | Archer → Hamster | triple light arrow | fire arrow | electric aura | fast, exciting adventure riff |
-| *(anything else)* | Default | Wizard → Dragon | blue beam | fireball | dragon fire | "Greensleeves"-style |
+| `chinese…` | Wuxia | Warrior → Panda | ink slash | thrown book | punch flurry (wrong) · fart (timeout) | pentatonic, "Mo Li Hua"-style |
+| `english_for_kid…` | Kid | Knight → Dino | sword slash | thrown lollipop | fart (wrong) · roar (timeout) | bouncy C-major cartoon tune |
+| `english_highschool…` | High school | Archer → Pig | triple light arrow | fire arrow | body-slam (wrong) · electric zap (timeout) | fast, exciting adventure riff |
+| *(anything else)* | Default | Wizard → Dragon | blue beam | fireball | fire breath (wrong) · muscle flex (timeout) | calm, easy-listening lo-fi loop |
 
 A theme swaps the backdrop, both fighters' sprites (idle / attack / hurt / die),
 the effect visuals, the sound effects, the BGM, and the on-screen character names
 (HUD and menu copy). **Game rules are identical across themes.**
 
+Some themes use one enemy attack for any miss. A theme can also react
+differently to a **wrong answer** vs a **timeout** by adding an `attack_timeout`
+enemy sprite plus `enemy_timeout` entries to its `fx`/`sfx` maps — the
+high-school pig body-slams a wrong answer but zaps you when the timer runs out,
+the kid dino farts a wrong answer but roars on a timeout, the wuxia panda throws
+a punch flurry on a wrong answer but farts on a timeout, and the default dragon
+breathes fire on a wrong answer but flexes to show off on a timeout. Themes
+without those entries fall back to their single enemy attack (see
+`enemySpriteName` / `fxName` / `sfxName` in `themes.js`).
+
 To add a theme for a future set: drop the art in `public/`, add a theme object in
 `themes.js`, and append a prefix rule to `THEME_RULES`.
 
-Themed art lives in `design/assets/` and is extracted into `public/sprites/<theme>/`:
+Themed art lives in `design/assets/` and is extracted into `public/sprites/<theme>/`
+(the default theme extracts into the `public/sprites/` root):
 
 | Theme | Asset | Source | Tool |
 | :-- | :-- | :-- | :-- |
+| Default | hero (witch) | `sprite_sheet1_hero.png` | `tools/extract_sprites_default.py` |
+| Default | enemy (dragon) | `sprite_sheet1_monster.png` | `tools/extract_sprites_default.py` |
+| Default | backdrop | `background.png` | sky / castle field |
 | Wuxia | hero (sword girl) | `sprite_sheet2_swordgirl.png` | `tools/extract_swordgirl.py` |
-| Wuxia | enemy (panda) | `sprite_sheet2.png` | `tools/extract_sprites_cn.py` |
+| Wuxia | enemy (panda) | `sprite_sheet2_monster.png` | `tools/extract_sprites_cn.py` |
 | Wuxia | backdrop | `background2.png` | landscape crop (y 100–1029) |
-| Kid | hero + enemy | `sprite_sheet3.png` | `tools/extract_sprites_kid.py` |
+| Kid | hero (knight) | `sprite_sheet3_hero.png` | `tools/extract_sprites_kid.py` |
+| Kid | enemy (dino) | `sprite_sheet3_monster.png` | `tools/extract_sprites_kid.py` |
 | Kid | backdrop | `background3.png` | landscape crop (y 150–1079) |
-| High school | hero + enemy | `sprite_sheet4.png` | `tools/extract_sprites_hs.py` |
+| High school | hero (archer) | `sprite_sheet4_hero.png` | `tools/extract_sprites_hs.py` |
+| High school | enemy (pig) | `sprite_sheet4_monster.png` | `tools/extract_sprites_hs.py` |
 | High school | backdrop | `background4.png` | landscape crop (y 150–1079) |
 
 The sword-girl and knight sheets have no hurt/defeated frame, so those themes map
 `hurt` and `die` to the idle frame; the CSS hurt-flash and lose-screen
-treatment carry those states. The sword girl is smooth illustration (not blocky
-pixel art), so she renders with `image-rendering: auto`; everything else stays
+treatment carry those states. The archer and witch sheets have a fallen (die)
+frame but no hurt frame, so only `hurt` reuses idle. The sword girl is smooth
+illustration
+(not blocky pixel art), so she renders with `image-rendering: auto`; everything
+else stays
 crisp.
 
 ### Languages / fonts

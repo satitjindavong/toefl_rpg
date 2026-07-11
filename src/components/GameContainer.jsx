@@ -6,6 +6,7 @@ import QuestionBoard from './QuestionBoard.jsx'
 import SoundControls from './SoundControls.jsx'
 import { audio } from '../audio/audioEngine.js'
 import { shuffle } from '../game/questions.js'
+import { sfxName } from '../game/themes.js'
 import {
   WIZARD_MAX_HP,
   DMG_CRITICAL,
@@ -96,7 +97,10 @@ function resolve(state, { choice = null, timeout = false }) {
     }
   }
 
-  // Wrong answer or timeout -> Wizard takes a hit.
+  // Wrong answer or timeout -> Wizard takes a hit. Timeouts get their own enemy
+  // animation/effect so themes can answer back differently (e.g. the pig
+  // body-slams a wrong answer but zaps a timeout); other themes fall back to the
+  // single attack via the theme helpers.
   const wizardHp = Math.max(0, state.wizardHp - DMG_TO_WIZARD)
   return {
     ...state,
@@ -105,8 +109,8 @@ function resolve(state, { choice = null, timeout = false }) {
     isCorrect: false,
     wizardHp,
     heroAnim: wizardHp <= 0 ? 'die' : 'hurt',
-    enemyAnim: 'attack',
-    effect: 'enemy',
+    enemyAnim: timeout ? 'attack_timeout' : 'attack',
+    effect: timeout ? 'enemy_timeout' : 'enemy',
     combo: 0,
   }
 }
@@ -128,8 +132,7 @@ export default function GameContainer({ questions, config, theme, sound, onSound
   // --- Play SFX when a turn resolves ---------------------------------------
   useEffect(() => {
     if (state.phase !== 'resolving') return
-    if (state.isCorrect) audio.sfx(theme.sfx[state.effect])
-    else audio.sfx(theme.sfx.enemy)
+    audio.sfx(sfxName(theme, state.effect))
   }, [state.phase, state.index, state.isCorrect, state.effect, theme])
 
   // --- After the animation delay: end the game or advance ------------------

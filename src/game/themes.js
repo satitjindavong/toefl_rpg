@@ -14,6 +14,10 @@ const BASE = import.meta.env.BASE_URL
 // `fx` maps the semantic effect (crit / normal / enemy) to a visual effect name,
 // and `sfx` maps it to a sound name (see audioEngine.sfx()).
 
+// Default theme: a witch girl versus a dragon. Critical = blue beam, normal =
+// fireball. The dragon answers back with two different actions: it breathes fire
+// on a wrong answer (`enemy`) and flexes its muscles to show off when the timer
+// runs out (`enemy_timeout`).
 export const DEFAULT_THEME = {
   id: 'default',
   heroName: 'Wizard',
@@ -25,23 +29,25 @@ export const DEFAULT_THEME = {
     idle: 'wizard_idle',
     cast_crit: 'wizard_blue',
     cast_normal: 'wizard_fire',
-    hurt: 'wizard_hurt',
+    hurt: 'wizard_idle', // no hurt frame on this sheet; the CSS flash carries it
     die: 'wizard_die',
   },
   enemy: {
     idle: 'dragon_idle',
-    attack: 'dragon_idle', // the dragon has no distinct attack pose
+    attack: 'dragon_fire', // wrong answer: fire breath
+    attack_timeout: 'dragon_flex', // timed out: muscle-flex show-off
     hurt: 'dragon_hurt',
     die: 'dragon_die',
   },
-  fx: { crit: 'blue', normal: 'fire', enemy: 'enemy' },
-  sfx: { crit: 'blue', normal: 'fire', enemy: 'hurt' },
+  fx: { crit: 'blue', normal: 'fire', enemy: 'enemy', enemy_timeout: 'flex' },
+  sfx: { crit: 'blue', normal: 'fire', enemy: 'fire', enemy_timeout: 'flex' },
   music: 'greensleeves',
 }
 
 // Wuxia theme: a brush-wielding female warrior versus a panda.
-// Critical = ink slash (สะบัดหมึก), normal = thrown book (ปาหนังสือ),
-// and the panda answers back with a fart (ปล่อยตด).
+// Critical = ink slash (สะบัดหมึก), normal = thrown book (ปาหนังสือ). The panda
+// answers back with two different actions: a flurry of punches on a wrong answer
+// (`enemy`) and a fart when the timer runs out (`enemy_timeout`).
 export const CHINESE_THEME = {
   id: 'chinese',
   heroName: 'Warrior',
@@ -60,19 +66,23 @@ export const CHINESE_THEME = {
   },
   enemy: {
     idle: 'panda_idle',
-    attack: 'panda_fart',
+    attack: 'panda_punch', // wrong answer: flurry of punches
+    attack_timeout: 'panda_fart', // timed out: fart
     hurt: 'panda_hurt',
     die: 'panda_die',
   },
-  fx: { crit: 'ink', normal: 'book', enemy: 'fart' },
-  sfx: { crit: 'ink', normal: 'book', enemy: 'fart' },
+  fx: { crit: 'ink', normal: 'book', enemy: 'punch', enemy_timeout: 'fart' },
+  sfx: { crit: 'ink', normal: 'book', enemy: 'punch', enemy_timeout: 'fart' },
   music: 'molihua',
   projectile: 'book', // sprite thrown by the 'book' effect
 }
 
 // Kid theme: a knight girl versus a friendly dinosaur in candy land.
-// Critical = sword slash (ฟันดาบ), normal = thrown lollipop (ปล่อยอมยิ้ม),
-// and the dino answers back with a roar (คำราม).
+// Critical = sword slash (ฟันดาบ), normal = thrown lollipop (ปล่อยอมยิ้ม). The dino
+// answers back with two different actions: a smelly fart on a wrong answer
+// (`enemy`) and a loud roar when the timer runs out (`enemy_timeout`). Both the
+// 'fart' and 'roar' fx/sfx already exist (shared with the wuxia panda and the
+// dino's old attack).
 export const KID_THEME = {
   id: 'kid',
   heroName: 'Knight',
@@ -91,23 +101,27 @@ export const KID_THEME = {
   },
   enemy: {
     idle: 'dino_idle',
-    attack: 'dino_roar',
+    attack: 'dino_fart', // wrong answer: fart
+    attack_timeout: 'dino_roar', // timed out: roar
     hurt: 'dino_hurt',
     die: 'dino_die',
   },
-  fx: { crit: 'slash', normal: 'candy', enemy: 'roar' },
-  sfx: { crit: 'sword', normal: 'candy', enemy: 'roar' },
+  fx: { crit: 'slash', normal: 'candy', enemy: 'fart', enemy_timeout: 'roar' },
+  sfx: { crit: 'sword', normal: 'candy', enemy: 'fart', enemy_timeout: 'roar' },
   music: 'kids',
   projectile: 'lollipop', // sprite thrown by the 'candy' effect
 }
 
-// High-school theme: an archer girl versus a winged hamster on an open meadow.
-// Critical = three light arrows (ปล่อยธนูแสงสามดอก), normal = a fire arrow
-// (ปล่อยธนูไฟ), and the hamster answers back with an electric aura (ปล่อยไฟฟ้ารอบตัว).
+// High-school theme: an archer girl versus a sunglasses-wearing pig on an open
+// meadow. Critical = three light arrows (ปล่อยธนูแสงสามดอก), normal = a fire arrow
+// (ปล่อยธนูไฟ). The pig answers back with two *different* actions depending on how
+// the player missed: a wrestling body-slam on a wrong answer (`enemy`) and an
+// electric aura when the timer runs out (`enemy_timeout`). See enemyStateFor()
+// and the fx/sfx helpers for how the timeout variant falls back for other themes.
 export const HS_THEME = {
   id: 'hs',
   heroName: 'Archer',
-  enemyName: 'Hamster',
+  enemyName: 'Pig',
   background: 'background_hs.png',
   bgPosition: 'center bottom',
   spriteDir: 'sprites/hs',
@@ -119,13 +133,14 @@ export const HS_THEME = {
     die: 'archer_die',
   },
   enemy: {
-    idle: 'hamster_idle',
-    attack: 'hamster_shock',
-    hurt: 'hamster_hurt',
-    die: 'hamster_die',
+    idle: 'pig_idle',
+    attack: 'pig_slam', // wrong answer: body-slam
+    attack_timeout: 'pig_shock', // timed out: electric aura
+    hurt: 'pig_hurt',
+    die: 'pig_die',
   },
-  fx: { crit: 'arrows', normal: 'firearrow', enemy: 'shock' },
-  sfx: { crit: 'arrow', normal: 'firearrow', enemy: 'shock' },
+  fx: { crit: 'arrows', normal: 'firearrow', enemy: 'slam', enemy_timeout: 'shock' },
+  sfx: { crit: 'arrow', normal: 'firearrow', enemy: 'slam', enemy_timeout: 'shock' },
   music: 'adventure',
   // This theme fires a different projectile per attack, so it uses the
   // per-effect `projectiles` map instead of the single `projectile`.
@@ -147,6 +162,27 @@ export function themeForExam(file) {
 
 export function spriteUrl(theme, name) {
   return `${BASE}${theme.spriteDir}/${name}.png`
+}
+
+// The game can distinguish a wrong answer (enemyAnim 'attack', effect 'enemy')
+// from a timeout (enemyAnim 'attack_timeout', effect 'enemy_timeout'). Only
+// themes that define the timeout variants react differently; everyone else
+// falls back to the single attack pose / effect / sound below.
+
+export function enemySpriteName(theme, animKey) {
+  if (theme.enemy[animKey]) return theme.enemy[animKey]
+  if (animKey === 'attack_timeout') return theme.enemy.attack || theme.enemy.idle
+  return theme.enemy.idle
+}
+
+export function fxName(theme, effect) {
+  if (!effect) return null
+  return theme.fx[effect] || (effect === 'enemy_timeout' ? theme.fx.enemy : null)
+}
+
+export function sfxName(theme, effect) {
+  if (!effect) return null
+  return theme.sfx[effect] || (effect === 'enemy_timeout' ? theme.sfx.enemy : null)
 }
 
 export function backgroundUrl(theme) {
