@@ -579,13 +579,60 @@ body {
   margin-bottom: clamp(7px, 1.6vh, 14px);
 }
 
+.quiz-prompt .vocab-row {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(6px, 1.4vw, 10px);
+  margin-top: 4px;
+}
+
 .quiz-prompt .vocab {
-  display: block;
   color: var(--pink-deep);
   font-size: clamp(20px, 4.4vh, 26px);
   font-weight: 700;
-  margin-top: 4px;
   text-shadow: 0 2px 0 #ffe0ec;
+}
+
+/* Pronounce (text-to-speech) button — a cute rounded speaker, only rendered when
+   the device has a voice for the word's language. */
+.speak-btn {
+  flex: none;
+  width: clamp(28px, 5vh, 34px);
+  height: clamp(28px, 5vh, 34px);
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff0f6;
+  box-shadow: 0 2px 6px rgba(220, 130, 180, 0.3);
+  transition: transform 0.12s ease, background 0.12s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.speak-btn:hover { background: #ffe3f0; }
+.speak-btn:active { transform: scale(0.88); }
+
+.speak-ic {
+  width: 60%;
+  height: 60%;
+  display: block;
+  overflow: visible;
+}
+
+.speak-body {
+  fill: var(--pink-deep);
+}
+
+.speak-wave {
+  fill: none;
+  stroke: var(--pink-deep);
+  stroke-width: 2.1;
+  stroke-linecap: round;
 }
 
 .options {

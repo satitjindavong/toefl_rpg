@@ -13,6 +13,8 @@ Thai, and more). Built with **React + Vite**, playable on mobile and desktop.
   | **Medium** | 8s  | 4 | 20 |
   | **Hard**   | 4s  | 3 | 30 |
 - Read the English word and tap the correct Thai meaning (A–D).
+  - 🔊 Tap the speaker beside the word to **hear it pronounced** (see
+    [Pronunciation](#pronunciation-text-to-speech)).
   - ✅ Any correct answer in time → Dragon **−1 HP**.
   - ⚡ Answer within the **first half** of the timer → flashier **Critical** blue
     beam + **double** the base points (still 1 damage).
@@ -24,6 +26,21 @@ Thai, and more). Built with **React + Vite**, playable on mobile and desktop.
   the Web Audio API — no audio files needed). **Music and sound effects are both
   on by default.** The default background theme is a calm, easy-listening
   lo-fi-style melody that loops gently without distracting from study.
+
+### Pronunciation (text-to-speech)
+
+A 🔊 button next to each vocab word speaks it aloud using the browser's built-in
+**Web Speech API** (`src/audio/speech.js`) — entirely client-side, so there's no
+server, no API cost, and no audio files. It's fire-and-forget, so the timer keeps
+running and tapping it never counts as an answer.
+
+The language is auto-detected from the word's script (CJK → Chinese, Thai block →
+Thai, otherwise English), and any romanization in parentheses is stripped before
+speaking (e.g. `打电话 (dǎ diànhuà)` is read as just `打电话`). Because installed
+voices vary by device, the button **only appears when the device actually has a
+voice for that word's language** — devices (or in-app webviews) without speech
+support, or without the needed language, simply don't show it, so nothing errors
+and no word is ever mispronounced by a wrong-language voice.
 
 ### Scoreboard
 
