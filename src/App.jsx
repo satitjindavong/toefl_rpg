@@ -1,5 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
+// NB: import from `/react`, not the `/next` path shown in Vercel's default
+// snippet — this app is React + Vite, and the Next entry point would not build.
 import { Analytics } from '@vercel/analytics/react'
+import { SpeedInsights } from '@vercel/speed-insights/react'
 import StartMenu from './components/StartMenu.jsx'
 import GameContainer from './components/GameContainer.jsx'
 import ResultScreen from './components/ResultScreen.jsx'
@@ -152,8 +155,9 @@ export default function App() {
         )}
       </div>
 
-      {/* Vercel Web Analytics — renders nothing; no-ops outside Vercel. */}
+      {/* Vercel Web Analytics + Speed Insights — render nothing; no-op off Vercel. */}
       <Analytics />
+      <SpeedInsights />
     </div>
   )
 }

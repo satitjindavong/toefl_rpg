@@ -103,13 +103,24 @@ npm run build      # outputs to game/dist
 npm run preview
 ```
 
-### Analytics
+### Analytics & Speed Insights
 
-Visitor traffic is tracked with **Vercel Web Analytics** (`<Analytics />` from
-`@vercel/analytics/react`, mounted in `App.jsx`). It is a no-op off Vercel — the
-`/_vercel/insights/script.js` request 404s locally, which is expected and
-harmless; it resolves once deployed. Enable *Analytics* for the project in the
-Vercel dashboard for data to show up.
+Both are mounted in `App.jsx` and render nothing:
+
+- **Vercel Web Analytics** — `<Analytics />` from `@vercel/analytics/react`
+- **Vercel Speed Insights** — `<SpeedInsights />` from `@vercel/speed-insights/react`
+
+> ⚠️ Import from **`/react`**, not the **`/next`** path in Vercel's default
+> snippet. This is a React + Vite app; the Next entry point would not build.
+
+Both are no-ops off Vercel: their `/_vercel/insights/script.js` and
+`/_vercel/speed-insights/script.js` requests 404 locally (expected and harmless)
+and resolve once deployed. The CSP in `vercel.json` already allows them — the
+scripts are same-origin (`script-src 'self'`) with a `va.vercel-scripts.com`
+fallback that is whitelisted too.
+
+Enable *Analytics* and *Speed Insights* for the project in the Vercel dashboard
+for data to show up.
 
 ## Project layout
 
