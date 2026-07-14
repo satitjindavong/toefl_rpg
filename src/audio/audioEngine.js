@@ -213,6 +213,7 @@ class AudioEngine {
       case 'slam': return this.sfxSlam()
       case 'punch': return this.sfxPunch()
       case 'flex': return this.sfxFlex()
+      case 'tick': return this.sfxTick()
       case 'click': return this.sfxClick()
       default: return undefined
     }
@@ -480,6 +481,15 @@ class AudioEngine {
     g.gain.exponentialRampToValueAtTime(0.0001, t + 0.35)
     o.connect(g); g.connect(this.sfxGain)
     o.start(t); o.stop(t + 0.4)
+  }
+
+  // Soft clock tick for each of the closing seconds. Deliberately quiet and very
+  // short so it nudges without startling or covering the option-tap click.
+  sfxTick() {
+    this._ensure()
+    const t = this.ctx.currentTime
+    this._tone(1180, t, 0.035, 'sine', this.sfxGain, 0.16)
+    this._tone(760, t + 0.008, 0.045, 'triangle', this.sfxGain, 0.1)
   }
 
   sfxClick() {

@@ -6,7 +6,7 @@
 
 import { spriteUrl, backgroundUrl, enemySpriteName, fxName } from '../game/themes.js'
 
-export default function BattleArena({ theme, heroAnim, enemyAnim, effect, shake }) {
+export default function BattleArena({ theme, heroAnim, enemyAnim, effect, shake, danger }) {
   const heroSprite = theme.hero[heroAnim] || theme.hero.idle
   const enemySprite = enemySpriteName(theme, enemyAnim)
   const fx = fxName(theme, effect)
@@ -16,7 +16,7 @@ export default function BattleArena({ theme, heroAnim, enemyAnim, effect, shake 
 
   return (
     <div
-      className={`arena theme-${theme.id} ${shake ? 'shake' : ''}`}
+      className={`arena theme-${theme.id} ${shake ? 'shake' : ''} ${danger ? 'danger' : ''}`}
       style={{ backgroundImage: `url(${backgroundUrl(theme)})`, backgroundPosition: theme.bgPosition }}
     >
       <div className="ground-shadow hero-shadow" />

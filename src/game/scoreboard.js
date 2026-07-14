@@ -46,7 +46,10 @@ function cookieGet() {
 function cookieSet(str) {
   try {
     const exp = new Date(Date.now() + 400 * 24 * 60 * 60 * 1000).toUTCString()
-    document.cookie = `${KEY}=${encodeURIComponent(str)}; expires=${exp}; path=/; SameSite=Lax`
+    // Secure only on HTTPS — a `Secure` cookie is dropped outright over plain
+    // http://localhost, which would break the fallback in local dev.
+    const secure = location.protocol === 'https:' ? '; Secure' : ''
+    document.cookie = `${KEY}=${encodeURIComponent(str)}; expires=${exp}; path=/; SameSite=Lax${secure}`
   } catch {
     /* cookies unavailable — ignore */
   }

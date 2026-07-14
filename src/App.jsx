@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { Analytics } from '@vercel/analytics/react'
 import StartMenu from './components/StartMenu.jsx'
 import GameContainer from './components/GameContainer.jsx'
 import ResultScreen from './components/ResultScreen.jsx'
@@ -150,6 +151,9 @@ export default function App() {
           />
         )}
       </div>
+
+      {/* Vercel Web Analytics — renders nothing; no-ops outside Vercel. */}
+      <Analytics />
     </div>
   )
 }

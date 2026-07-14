@@ -15,6 +15,8 @@ import {
   SPEED_BONUS_PER_SEC,
   TURN_DELAY,
   TICK_MS,
+  TICK_ENABLED,
+  dangerThreshold,
 } from '../game/constants.js'
 
 function init({ questions, config }) {
@@ -122,12 +124,35 @@ export default function GameContainer({ questions, config, theme, sound, onSound
 
   const question = state.pool[state.index]
 
+  // Closing seconds of the turn: pulses the battle scene and (optionally) ticks.
+  // Only while an answer is still awaited, so it stops the moment a turn resolves.
+  const danger =
+    state.phase === 'answering' &&
+    state.timeLeft > 0 &&
+    state.timeLeft <= dangerThreshold(state.timeLimit)
+
   // --- Countdown timer: only runs while awaiting an answer -----------------
   useEffect(() => {
     if (state.phase !== 'answering') return
     const id = setInterval(() => dispatch({ type: 'TICK', dt: TICK_MS / 1000 }), TICK_MS)
     return () => clearInterval(id)
   }, [state.phase, state.index])
+
+  // --- Soft tick on each remaining second of the danger window --------------
+  // The timer ticks every 100 ms, so fire only when the whole-second count
+  // changes (3 → 2 → 1). audio.sfx() already honours the 🔊 SFX toggle.
+  const lastTickSec = useRef(null)
+  useEffect(() => {
+    if (!TICK_ENABLED || !danger) {
+      lastTickSec.current = null
+      return
+    }
+    const sec = Math.ceil(state.timeLeft)
+    if (lastTickSec.current !== sec) {
+      lastTickSec.current = sec
+      audio.sfx('tick')
+    }
+  }, [danger, state.timeLeft])
 
   // --- Play SFX when a turn resolves ---------------------------------------
   useEffect(() => {
@@ -181,6 +206,7 @@ export default function GameContainer({ questions, config, theme, sound, onSound
         enemyAnim={state.enemyAnim}
         effect={state.effect}
         shake={shake}
+        danger={danger}
       />
 
       <QuestionBoard

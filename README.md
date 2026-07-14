@@ -20,12 +20,47 @@ Thai, and more). Built with **React + Vite**, playable on mobile and desktop.
     beam + **double** the base points (still 1 damage).
   - ➕ Every correct answer adds a speed bonus of **10 × seconds left**.
   - ❌ Wrong or timeout → Wizard **−1 HP**.
+  - ⏳ In the closing seconds the **battle scene pulses coral** as a time-is-up
+    warning (see [Time warning](#time-warning)).
 - Reduce the Dragon's HP to 0 to **win**; if your HP hits 0 you **lose**.
 - Winning grants an end bonus of **500 × surviving Wizard HP**.
 - Toggle 🎵 music and 🔊 sound effects any time (audio is fully synthesized via
   the Web Audio API — no audio files needed). **Music and sound effects are both
   on by default.** The default background theme is a calm, easy-listening
   lo-fi-style melody that loops gently without distracting from study.
+
+### Time warning
+
+Players kept getting caught out by the question changing: their eyes are on the
+answer options at the bottom, so the red timer bar at the top goes unnoticed. In
+the closing seconds the **battle scene** pulses coral once per second (a coral
+border, an outer halo, and an in-scene vignette), which reads as in-game danger
+and stays clear of the text being read. It only animates the border colour and
+glow — **never the size or padding** — so nothing in the layout can shift under a
+finger mid-tap.
+
+> Glowing the quiz box itself was tried first: it is closer to where the eyes
+> rest, but pulsing right behind the options made them harder to read. The scene
+> is the calmer place for it.
+
+The window is `min(DANGER_SECONDS, timeLimit × DANGER_MAX_FRACTION)`
+(`src/game/constants.js`) — 3 s normally, but capped to a fraction of the timer
+so **Hard mode (4 s) pulses for 1.6 s instead of 75% of the turn**, which would
+just be noise:
+
+| Difficulty | Timer | Pulses for |
+| :-- | :-- | :-- |
+| Easy | 15 s | 3.0 s |
+| Medium | 8 s | 3.0 s |
+| Hard | 4 s | 1.6 s |
+
+A **soft clock tick** also plays on each remaining second of that same window,
+for players who look away from the screen while thinking. It obeys the 🔊 SFX
+toggle like every other sound, and can be switched off on its own with
+**`TICK_ENABLED`** in `src/game/constants.js` (the pulse stays).
+
+The pulse stops the instant the turn resolves (answered *or* timed out), and
+`prefers-reduced-motion` gets a steady tint instead of a pulse.
 
 ### Pronunciation (text-to-speech)
 
@@ -67,6 +102,14 @@ Build for production:
 npm run build      # outputs to game/dist
 npm run preview
 ```
+
+### Analytics
+
+Visitor traffic is tracked with **Vercel Web Analytics** (`<Analytics />` from
+`@vercel/analytics/react`, mounted in `App.jsx`). It is a no-op off Vercel — the
+`/_vercel/insights/script.js` request 404s locally, which is expected and
+harmless; it resolves once deployed. Enable *Analytics* for the project in the
+Vercel dashboard for data to show up.
 
 ## Project layout
 

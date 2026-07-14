@@ -2,3 +2,11 @@ node_modules
 dist
 *.local
 .DS_Store
+
+# Never commit secrets / local credentials
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+.vercel
