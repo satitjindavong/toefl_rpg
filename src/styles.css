@@ -1822,7 +1822,7 @@ body {
 /* ---- Pig body-slam (enemy, wrong answer) ------------------- */
 /* A big wrestling lunge from the right that crashes onto the hero. Overrides
    the gentle generic lungeLeft for this theme. */
-.theme-hs .enemy.anim-attack {
+.theme-highschool .enemy.anim-attack {
   transform-origin: bottom center;
   animation: pigSlam 0.6s ease-in;
   z-index: 3;
@@ -1886,31 +1886,31 @@ body {
 }
 
 /* ---- High-school theme tuning ------------------------------ */
-.theme-hs .hero {
+.theme-highschool .hero {
   height: 40%;
   max-height: 140px;
 }
 
-.theme-hs .enemy {
+.theme-highschool .enemy {
   height: 38%;
   max-height: 132px;
 }
 
 /* the fallen frames are wide and short */
-.theme-hs .enemy.anim-die {
+.theme-highschool .enemy.anim-die {
   height: 30%;
   max-height: 104px;
 }
 
-.theme-hs .hero.anim-die {
+.theme-highschool .hero.anim-die {
   height: 26%;
   max-height: 92px;
 }
 
-.theme-hs .hero-shadow {
+.theme-highschool .hero-shadow {
   width: 58px;
 }
 
-.theme-hs .enemy-shadow {
+.theme-highschool .enemy-shadow {
   width: 86px;
 }

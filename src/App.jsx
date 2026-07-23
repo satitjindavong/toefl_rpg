@@ -11,6 +11,7 @@ import ExamSelectScreen from './components/ExamSelectScreen.jsx'
 import { loadQuestions, loadExamSets, DEFAULT_EXAM } from './game/questions.js'
 import { DIFFICULTIES, HP_BONUS } from './game/constants.js'
 import { themeForExam } from './game/themes.js'
+import config from './game/config.js'
 import { audio } from './audio/audioEngine.js'
 
 export default function App() {
@@ -23,7 +24,10 @@ export default function App() {
   const [error, setError] = useState(null)
   const [endInfo, setEndInfo] = useState(null)
   const [gameId, setGameId] = useState(0)
-  const [sound, setSound] = useState({ bgm: false, sfx: true })
+  const [sound, setSound] = useState({
+    bgm: config.sound.bgmDefaultOn,
+    sfx: config.sound.sfxDefaultOn,
+  })
   const soundRef = useRef(sound)
   soundRef.current = sound
 

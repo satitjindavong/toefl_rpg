@@ -3,7 +3,7 @@
 
 import { useMemo, useState } from 'react'
 import { DIFFICULTIES, HP_BONUS } from '../game/constants.js'
-import { qualifies, addScore } from '../game/scoreboard.js'
+import { qualifies, submitScore } from '../game/scoreboard.js'
 import { spriteUrl } from '../game/themes.js'
 
 export default function ResultScreen({ info, theme, onPlayAgain, onViewScoreboard }) {
@@ -14,11 +14,18 @@ export default function ResultScreen({ info, theme, onPlayAgain, onViewScoreboar
   const eligible = useMemo(() => qualifies(exam, mode, total), [exam, mode, total])
   const [name, setName] = useState('')
   const [savedRank, setSavedRank] = useState(-1)
+  const [saving, setSaving] = useState(false)
   const saved = savedRank >= 0
 
-  const handleSave = () => {
-    const rank = addScore(exam, mode, { name, score: total, hp, ts })
-    setSavedRank(rank)
+  const handleSave = async () => {
+    if (saving || saved) return
+    setSaving(true)
+    try {
+      const rank = await submitScore(exam, mode, { name, score: total, hp, ts })
+      setSavedRank(rank)
+    } finally {
+      setSaving(false)
+    }
   }
 
   return (
@@ -62,9 +69,10 @@ export default function ResultScreen({ info, theme, onPlayAgain, onViewScoreboar
               placeholder="YOUR NAME"
               onChange={(e) => setName(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleSave()}
+              disabled={saving}
             />
-            <button className="pill-btn save-btn" onClick={handleSave}>
-              SAVE
+            <button className="pill-btn save-btn" onClick={handleSave} disabled={saving}>
+              {saving ? 'SAVING…' : 'SAVE'}
             </button>
           </div>
         </div>

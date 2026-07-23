@@ -1,10 +1,11 @@
-// Session scoreboard: one tab per difficulty, showing the top 20 runs with the
+// Global scoreboard: one tab per difficulty, showing the ranked runs with the
 // player's name, score, when they played, and how much Wizard HP survived.
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { DIFFICULTIES } from '../game/constants.js'
 import { examLabel } from '../game/questions.js'
-import { MODES, getAllBoards } from '../game/scoreboard.js'
+import { MODES, getBoard } from '../game/scoreboard.js'
+import { isGlobal } from '../game/supabase.js'
 
 function fmtWhen(ts) {
   try {
@@ -21,14 +22,30 @@ function fmtWhen(ts) {
 
 export default function ScoreboardScreen({ exam, onBack }) {
   const [mode, setMode] = useState('EASY')
-  const boards = getAllBoards(exam)
-  const rows = boards[mode] || []
+  const [rows, setRows] = useState([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    let alive = true
+    setLoading(true)
+    getBoard(exam, mode).then((data) => {
+      if (alive) {
+        setRows(data)
+        setLoading(false)
+      }
+    })
+    return () => {
+      alive = false
+    }
+  }, [exam, mode])
 
   return (
     <div className="screen scoreboard">
       <h1 className="sb-heading">🏆 SCOREBOARD</h1>
       <p className="sb-exam">Exam set: <strong>{examLabel(exam)}</strong></p>
-      <p className="sb-reset">Scores are saved in this browser (this device only)</p>
+      <p className="sb-reset">
+        {isGlobal ? 'Global ranking — shared by all players' : 'Saved on this device only'}
+      </p>
 
       <div className="sb-tabs">
         {MODES.map((m) => (
@@ -43,7 +60,9 @@ export default function ScoreboardScreen({ exam, onBack }) {
       </div>
 
       <div className="sb-table-wrap">
-        {rows.length === 0 ? (
+        {loading ? (
+          <p className="sb-empty">Loading…</p>
+        ) : rows.length === 0 ? (
           <p className="sb-empty">No scores yet in this mode — be the first!</p>
         ) : (
           <table className="sb-table">

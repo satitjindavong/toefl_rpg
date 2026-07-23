@@ -3,8 +3,11 @@
 // A theme swaps the battle backdrop, both fighters' sprites, the attack effects,
 // the background music and the sound effects. Game rules are unaffected.
 //
-// To add a theme for future question sets: define a theme object below and add a
-// rule to THEME_RULES (matched in order, first match wins).
+// To add a theme for future question sets: define a theme object below, register
+// its id in THEMES_BY_ID, then pair it with an exam prefix in config.js
+// (config.themeRules, matched in order, first match wins).
+
+import config from './config.js'
 
 const BASE = import.meta.env.BASE_URL
 
@@ -119,7 +122,7 @@ export const KID_THEME = {
 // electric aura when the timer runs out (`enemy_timeout`). See enemyStateFor()
 // and the fx/sfx helpers for how the timeout variant falls back for other themes.
 export const HS_THEME = {
-  id: 'hs',
+  id: 'highschool',
   heroName: 'Archer',
   enemyName: 'Pig',
   background: 'background_hs.png',
@@ -147,17 +150,21 @@ export const HS_THEME = {
   projectiles: { crit: 'arrows_light', normal: 'arrow_fire' },
 }
 
-// First match wins; add new prefixes here as more themed sets arrive.
-const THEME_RULES = [
-  { prefix: 'chinese', theme: CHINESE_THEME },
-  { prefix: 'english_for_kid', theme: KID_THEME },
-  { prefix: 'english_highschool', theme: HS_THEME },
-]
+// Registry of theme id -> theme object. To add a new look, define the theme
+// object above and register its id here; the exam->theme pairing itself lives in
+// config.js (config.themeRules), so day-to-day changes don't touch this file.
+const THEMES_BY_ID = {
+  default: DEFAULT_THEME,
+  chinese: CHINESE_THEME,
+  kid: KID_THEME,
+  highschool: HS_THEME,
+}
 
+// The prefix->theme pairing comes from config.js; first match wins.
 export function themeForExam(file) {
   const name = String(file || '').toLowerCase()
-  const hit = THEME_RULES.find((r) => name.startsWith(r.prefix))
-  return hit ? hit.theme : DEFAULT_THEME
+  const hit = config.themeRules.find((r) => name.startsWith(r.prefix))
+  return (hit && THEMES_BY_ID[hit.theme]) || DEFAULT_THEME
 }
 
 export function spriteUrl(theme, name) {
