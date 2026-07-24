@@ -3,8 +3,11 @@
 // Format per line: vocab, choice1, choice2, choice3, choice4, correct_number
 // Example:        abandon, ละทิ้ง, รุนแรง, รูปแบบ, แบบสหพันธรัฐ, 1
 
+import config from './config.js'
+
 // The default question set; used when no other set has been chosen.
-export const DEFAULT_EXAM = 'default.txt'
+// Edit it in config.js (defaultExam).
+export const DEFAULT_EXAM = config.defaultExam
 
 // A friendly display name for a question-set file, e.g. 'default.txt' ->
 // 'Default', 'toefl_en_5k_words.txt' -> 'Toefl En 5k Words'.
@@ -34,11 +37,44 @@ export async function loadExamSets() {
   return [{ file: DEFAULT_EXAM, count: 0 }]
 }
 
+// Last-resort question set, used when the configured one is missing. Kept
+// hardcoded (deliberately NOT in config.js): it is the safety net for a mistyped
+// config.defaultExam, so it must not be breakable by that same typo. Keep this
+// file present in public/.
+export const FALLBACK_EXAM = 'default.txt'
+
+// Fetch + parse one set. Returns the questions, or null if the file is missing
+// or unusable — so the caller can decide whether to fall back.
+async function tryLoad(file) {
+  try {
+    const res = await fetch(`${import.meta.env.BASE_URL}${file}`)
+    if (!res.ok) return null
+    const questions = parseQuestions(await res.text())
+    // A static host may answer a missing path with index.html and HTTP 200,
+    // which parses to zero questions — treat that as "not found" as well.
+    return questions.length ? questions : null
+  } catch {
+    return null // network error / offline
+  }
+}
+
+// Load the requested set, falling back to FALLBACK_EXAM when it can't be used.
+// Returns { questions, file } where `file` is what actually loaded, so the caller
+// can keep its own state (theme, scoreboard key) in sync after a fallback.
 export async function loadQuestions(file = DEFAULT_EXAM) {
-  const res = await fetch(`${import.meta.env.BASE_URL}${file}`)
-  if (!res.ok) throw new Error(`Failed to load ${file} (${res.status})`)
-  const raw = await res.text()
-  return parseQuestions(raw)
+  const questions = await tryLoad(file)
+  if (questions) return { questions, file }
+
+  if (file !== FALLBACK_EXAM) {
+    console.warn(
+      `[questions] Exam set "${file}" is missing or empty — falling back to "${FALLBACK_EXAM}". ` +
+        `Check config.defaultExam and that the file exists in public/.`
+    )
+    const fallback = await tryLoad(FALLBACK_EXAM)
+    if (fallback) return { questions: fallback, file: FALLBACK_EXAM }
+    throw new Error(`Cannot load "${file}", and the fallback "${FALLBACK_EXAM}" is missing too.`)
+  }
+  throw new Error(`Cannot load question set "${FALLBACK_EXAM}" — is it present in public/?`)
 }
 
 export function parseQuestions(raw) {

@@ -45,10 +45,12 @@ export default function App() {
     setLoading(true)
     setError(null)
     loadQuestions(activeExam)
-      .then((q) => {
+      .then(({ questions: q, file }) => {
         if (cancelled) return
-        if (q.length === 0) throw new Error(`No questions found in ${activeExam}`)
         setQuestions(q)
+        // The set was missing and a fallback loaded instead — point the app at
+        // what actually loaded so the theme and scoreboard key stay truthful.
+        if (file !== activeExam) setActiveExam(file)
       })
       .catch((e) => !cancelled && setError(e.message))
       .finally(() => !cancelled && setLoading(false))
